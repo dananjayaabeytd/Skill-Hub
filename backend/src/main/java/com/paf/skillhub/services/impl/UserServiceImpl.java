@@ -9,6 +9,7 @@ import com.paf.skillhub.repositories.PasswordResetTokenRepository;
 import com.paf.skillhub.repositories.RoleRepository;
 import com.paf.skillhub.repositories.UserRepository;
 import com.paf.skillhub.services.UserService;
+import com.paf.skillhub.utils.EmailService;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -37,6 +38,10 @@ public class UserServiceImpl implements UserService {
 
   @Autowired
   PasswordResetTokenRepository passwordResetTokenRepository;
+
+  @Autowired
+  EmailService emailService;
+
 
   @Override
   public void updateUserRole(Long userId, String roleName) {
@@ -152,6 +157,9 @@ public class UserServiceImpl implements UserService {
     passwordResetTokenRepository.save(resetToken);
 
     String resetUrl = frontendUrl + "/reset-password?token=" + token;
+
     // Send email to user
+    emailService.sendPasswordResetEmail(user.getEmail(), resetUrl);
+
   }
 }
