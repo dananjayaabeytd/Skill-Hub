@@ -29,7 +29,7 @@ public class AuthController {
   @Autowired
   JwtUtils jwtUtils;
 
-  //  @Autowired
+  @Autowired
   AuthenticationManager authenticationManager;
 
   @PostMapping("/public/signin")

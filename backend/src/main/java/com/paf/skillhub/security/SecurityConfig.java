@@ -5,15 +5,21 @@ import com.paf.skillhub.models.Role;
 import com.paf.skillhub.models.User;
 import com.paf.skillhub.repositories.RoleRepository;
 import com.paf.skillhub.repositories.UserRepository;
+import com.paf.skillhub.security.jwt.AuthEntryPointJwt;
+import com.paf.skillhub.security.jwt.AuthTokenFilter;
 import java.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -21,6 +27,14 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+  @Autowired
+  private AuthEntryPointJwt unauthorizedHandler;
+
+  @Bean
+  public AuthTokenFilter authenticationJwtTokenFilter() {
+    return new AuthTokenFilter();
+  }
 
   @Bean
   SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -35,10 +49,22 @@ public class SecurityConfig {
         -> requests
         .requestMatchers("/api/admin/**").hasRole("ADMIN")
         .requestMatchers("/api/csrf-token").permitAll()
+        .requestMatchers("/api/auth/public/**").permitAll()
         .anyRequest().authenticated());
-    //http.formLogin(withDefaults());
+    http.exceptionHandling(exception
+        -> exception.authenticationEntryPoint(unauthorizedHandler));
+    http.addFilterBefore(authenticationJwtTokenFilter(),
+        UsernamePasswordAuthenticationFilter.class);
+    http.formLogin(withDefaults());
     http.httpBasic(withDefaults());
     return http.build();
+  }
+
+  @Bean
+  public AuthenticationManager authenticationManager(
+      AuthenticationConfiguration authenticationConfiguration)
+      throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
   }
 
   @Bean
