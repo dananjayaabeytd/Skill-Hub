@@ -1,22 +1,26 @@
-package com.paf.skillhub.security.services;
+package com.paf.skillhub.Auth.security.services;
 
-import com.paf.skillhub.models.User;
+import com.paf.skillhub.User.models.User;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+
+@Getter
+@Setter
 @NoArgsConstructor
-@Data
 public class UserDetailsImpl implements UserDetails {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private Long id;
@@ -57,14 +61,6 @@ public class UserDetailsImpl implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return authorities;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public String getEmail() {
-    return email;
   }
 
   @Override

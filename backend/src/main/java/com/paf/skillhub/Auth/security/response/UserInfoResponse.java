@@ -1,4 +1,4 @@
-package com.paf.skillhub.security.response;
+package com.paf.skillhub.Auth.security.response;
 
 import lombok.Getter;
 import lombok.Setter;

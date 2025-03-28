@@ -1,8 +1,8 @@
-package com.paf.skillhub.services;
+package com.paf.skillhub.User.services;
 
-import com.paf.skillhub.dtos.UserDTO;
-import com.paf.skillhub.models.Role;
-import com.paf.skillhub.models.User;
+import com.paf.skillhub.User.dtos.UserDTO;
+import com.paf.skillhub.Auth.models.Role;
+import com.paf.skillhub.User.models.User;
 import java.util.List;
 import java.util.Optional;
 

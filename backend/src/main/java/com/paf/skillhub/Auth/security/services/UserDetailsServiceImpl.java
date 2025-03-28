@@ -1,7 +1,7 @@
-package com.paf.skillhub.security.services;
+package com.paf.skillhub.Auth.security.services;
 
-import com.paf.skillhub.models.User;
-import com.paf.skillhub.repositories.UserRepository;
+import com.paf.skillhub.User.models.User;
+import com.paf.skillhub.User.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

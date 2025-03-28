@@ -1,6 +1,6 @@
-package com.paf.skillhub.dtos;
+package com.paf.skillhub.User.dtos;
 
-import com.paf.skillhub.models.Role;
+import com.paf.skillhub.Auth.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
