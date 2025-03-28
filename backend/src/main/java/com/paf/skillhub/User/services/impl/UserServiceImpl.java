@@ -1,14 +1,14 @@
-package com.paf.skillhub.services.impl;
+package com.paf.skillhub.User.services.impl;
 
-import com.paf.skillhub.dtos.UserDTO;
-import com.paf.skillhub.models.AppRole;
-import com.paf.skillhub.models.PasswordResetToken;
-import com.paf.skillhub.models.Role;
-import com.paf.skillhub.models.User;
-import com.paf.skillhub.repositories.PasswordResetTokenRepository;
-import com.paf.skillhub.repositories.RoleRepository;
-import com.paf.skillhub.repositories.UserRepository;
-import com.paf.skillhub.services.UserService;
+import com.paf.skillhub.User.dtos.UserDTO;
+import com.paf.skillhub.Auth.models.AppRole;
+import com.paf.skillhub.Auth.models.PasswordResetToken;
+import com.paf.skillhub.Auth.models.Role;
+import com.paf.skillhub.User.models.User;
+import com.paf.skillhub.Auth.repositories.PasswordResetTokenRepository;
+import com.paf.skillhub.Auth.repositories.RoleRepository;
+import com.paf.skillhub.User.repositories.UserRepository;
+import com.paf.skillhub.User.services.UserService;
 import com.paf.skillhub.utils.EmailService;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

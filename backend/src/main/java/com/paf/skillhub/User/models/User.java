@@ -1,7 +1,10 @@
-package com.paf.skillhub.models;
+package com.paf.skillhub.User.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.paf.skillhub.Auth.models.Role;
+import com.paf.skillhub.Follow.models.Follower;
+import com.paf.skillhub.Skill.models.Skill;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +17,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -60,9 +65,15 @@ public class User {
 
   @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
   @JoinColumn(name = "role_id", referencedColumnName = "role_id")
-  @JsonBackReference
   @ToString.Exclude
   private Role role;
+
+  @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @JoinTable(name = "user_skills",
+      joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "skill_id"))
+  @JsonManagedReference
+  private Set<Skill> skills = new HashSet<>();
 
   @CreationTimestamp
   @Column(updatable = false)
@@ -70,6 +81,15 @@ public class User {
 
   @UpdateTimestamp
   private LocalDateTime updatedDate;
+
+  // Add these to your User class if desired for easier querying
+  @OneToMany(mappedBy = "user")
+  @JsonIgnore
+  private Set<Follower> followers = new HashSet<>();
+
+  @OneToMany(mappedBy = "followerUser")
+  @JsonIgnore
+  private Set<Follower> following = new HashSet<>();
 
   public User(String userName, String email, String password) {
     this.userName = userName;
@@ -98,4 +118,3 @@ public class User {
     return getClass().hashCode();
   }
 }
-

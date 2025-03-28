@@ -29,7 +29,5 @@ public class Skill {
   @JsonBackReference
   private Set<User> users = new HashSet<>();
 
-  public Skill(Long skillId) {
-  }
-  // Getters and Setters
+
 }
