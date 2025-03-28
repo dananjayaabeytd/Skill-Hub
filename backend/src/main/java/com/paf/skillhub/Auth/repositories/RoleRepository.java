@@ -1,7 +1,7 @@
-package com.paf.skillhub.repositories;
+package com.paf.skillhub.Auth.repositories;
 
-import com.paf.skillhub.models.AppRole;
-import com.paf.skillhub.models.Role;
+import com.paf.skillhub.Auth.models.AppRole;
+import com.paf.skillhub.Auth.models.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
