@@ -1,4 +1,4 @@
-package com.paf.skillhub.security.request;
+package com.paf.skillhub.Auth.security.request;
 
 import lombok.Getter;
 import lombok.Setter;

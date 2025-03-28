@@ -1,5 +1,6 @@
-package com.paf.skillhub.models;
+package com.paf.skillhub.Auth.models;
 
+import com.paf.skillhub.User.models.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
