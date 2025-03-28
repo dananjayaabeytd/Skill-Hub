@@ -1,4 +1,4 @@
-package com.paf.skillhub.security.jwt;
+package com.paf.skillhub.Auth.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;

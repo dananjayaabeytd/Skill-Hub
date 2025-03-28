@@ -1,9 +1,9 @@
-package com.paf.skillhub.controllers;
+package com.paf.skillhub.User.controllers;
 
-import com.paf.skillhub.dtos.UserDTO;
-import com.paf.skillhub.models.Role;
-import com.paf.skillhub.models.User;
-import com.paf.skillhub.services.UserService;
+import com.paf.skillhub.User.dtos.UserDTO;
+import com.paf.skillhub.Auth.models.Role;
+import com.paf.skillhub.User.models.User;
+import com.paf.skillhub.User.services.UserService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

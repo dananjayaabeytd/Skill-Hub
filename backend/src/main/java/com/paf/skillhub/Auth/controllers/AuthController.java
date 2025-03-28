@@ -1,17 +1,17 @@
-package com.paf.skillhub.controllers;
+package com.paf.skillhub.Auth.controllers;
 
-import com.paf.skillhub.models.AppRole;
-import com.paf.skillhub.models.Role;
-import com.paf.skillhub.models.User;
-import com.paf.skillhub.repositories.RoleRepository;
-import com.paf.skillhub.repositories.UserRepository;
-import com.paf.skillhub.security.jwt.JwtUtils;
-import com.paf.skillhub.security.request.LoginRequest;
-import com.paf.skillhub.security.request.SignupRequest;
-import com.paf.skillhub.security.response.LoginResponse;
-import com.paf.skillhub.security.response.MessageResponse;
-import com.paf.skillhub.security.response.UserInfoResponse;
-import com.paf.skillhub.services.UserService;
+import com.paf.skillhub.Auth.models.AppRole;
+import com.paf.skillhub.Auth.models.Role;
+import com.paf.skillhub.User.models.User;
+import com.paf.skillhub.Auth.repositories.RoleRepository;
+import com.paf.skillhub.User.repositories.UserRepository;
+import com.paf.skillhub.Auth.security.jwt.JwtUtils;
+import com.paf.skillhub.Auth.security.request.LoginRequest;
+import com.paf.skillhub.Auth.security.request.SignupRequest;
+import com.paf.skillhub.Auth.security.response.LoginResponse;
+import com.paf.skillhub.Auth.security.response.MessageResponse;
+import com.paf.skillhub.Auth.security.response.UserInfoResponse;
+import com.paf.skillhub.User.services.UserService;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.Set;
@@ -22,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -61,7 +62,8 @@ public class AuthController {
   UserService userService;
 
   @PostMapping("/public/signin")
-  public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest)
+  {
     Authentication authentication;
     try {
       authentication = authenticationManager
@@ -84,7 +86,7 @@ public class AuthController {
 
     // Collect roles from the UserDetails
     List<String> roles = userDetails.getAuthorities().stream()
-        .map(item -> item.getAuthority())
+        .map(GrantedAuthority::getAuthority)
         .collect(Collectors.toList());
 
     // Prepare the response body, now including the JWT token directly in the body
@@ -96,7 +98,8 @@ public class AuthController {
   }
 
   @PostMapping("/public/signup")
-  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest)
+  {
     if (userRepository.existsByUserName(signUpRequest.getUsername())) {
       return ResponseEntity.badRequest()
           .body(new MessageResponse("Error: Username is already taken!"));
@@ -144,11 +147,12 @@ public class AuthController {
   }
 
   @GetMapping("/user")
-  public ResponseEntity<?> getUserDetails(@AuthenticationPrincipal UserDetails userDetails) {
+  public ResponseEntity<?> getUserDetails(@AuthenticationPrincipal UserDetails userDetails)
+  {
     User user = userService.findByUsername(userDetails.getUsername());
 
     List<String> roles = userDetails.getAuthorities().stream()
-        .map(item -> item.getAuthority())
+        .map(GrantedAuthority::getAuthority)
         .collect(Collectors.toList());
 
     UserInfoResponse response = new UserInfoResponse(
@@ -169,12 +173,14 @@ public class AuthController {
   }
 
   @GetMapping("/username")
-  public String currentUserName(@AuthenticationPrincipal UserDetails userDetails) {
+  public String currentUserName(@AuthenticationPrincipal UserDetails userDetails)
+  {
     return (userDetails != null) ? userDetails.getUsername() : "";
   }
 
   @PostMapping("/public/forgot-password")
-  public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+  public ResponseEntity<?> forgotPassword(@RequestParam String email)
+  {
     try {
       userService.generatePasswordResetToken(email);
       return ResponseEntity.ok(new MessageResponse("Password reset email sent!"));
@@ -187,7 +193,8 @@ public class AuthController {
 
   @PostMapping("/public/reset-password")
   public ResponseEntity<?> resetPassword(@RequestParam String token,
-      @RequestParam String newPassword) {
+      @RequestParam String newPassword)
+  {
 
     try {
       userService.resetPassword(token, newPassword);

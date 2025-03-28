@@ -1,4 +1,4 @@
-package com.paf.skillhub.controllers;
+package com.paf.skillhub.Auth.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.web.csrf.CsrfToken;

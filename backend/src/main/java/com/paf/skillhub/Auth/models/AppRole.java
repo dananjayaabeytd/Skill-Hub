@@ -1,4 +1,4 @@
-package com.paf.skillhub.models;
+package com.paf.skillhub.Auth.models;
 
 public enum AppRole {
   ROLE_USER,
