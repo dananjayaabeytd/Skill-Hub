@@ -1,4 +1,4 @@
-package com.paf.skillhub.security;
+package com.paf.skillhub.Auth.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
