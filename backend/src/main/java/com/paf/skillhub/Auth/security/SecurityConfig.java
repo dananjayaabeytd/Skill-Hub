@@ -1,13 +1,13 @@
-package com.paf.skillhub.security;
+package com.paf.skillhub.Auth.security;
 
-import com.paf.skillhub.config.OAuth2LoginSuccessHandler;
-import com.paf.skillhub.models.AppRole;
-import com.paf.skillhub.models.Role;
-import com.paf.skillhub.models.User;
-import com.paf.skillhub.repositories.RoleRepository;
-import com.paf.skillhub.repositories.UserRepository;
-import com.paf.skillhub.security.jwt.AuthEntryPointJwt;
-import com.paf.skillhub.security.jwt.AuthTokenFilter;
+import com.paf.skillhub.Auth.config.OAuth2LoginSuccessHandler;
+import com.paf.skillhub.Auth.models.AppRole;
+import com.paf.skillhub.Auth.models.Role;
+import com.paf.skillhub.User.models.User;
+import com.paf.skillhub.Auth.repositories.RoleRepository;
+import com.paf.skillhub.User.repositories.UserRepository;
+import com.paf.skillhub.Auth.security.jwt.AuthEntryPointJwt;
+import com.paf.skillhub.Auth.security.jwt.AuthTokenFilter;
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,6 +30,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true,
+    securedEnabled = true,
+    jsr250Enabled = true)
 public class SecurityConfig {
 
   @Autowired
@@ -43,30 +47,40 @@ public class SecurityConfig {
     return new AuthTokenFilter();
   }
 
+//  @Bean
+//  SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+//    http
+//        .csrf(csrf -> csrf.disable()) // Disable CSRF
+//        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()) // Allow all requests
+//        .formLogin(login -> login.disable()) // Disable form login
+//        .httpBasic(basic -> basic.disable()); // Disable basic auth
+//
+//    return http.build();
+//  }
+
   @Bean
   SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
     http.csrf(csrf ->
         csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .ignoringRequestMatchers("/api/auth/public/**")
+            .ignoringRequestMatchers("/api/admin/**")
     );
 
     // Enable CORS
     http.cors(Customizer.withDefaults());
 
     //http.csrf(AbstractHttpConfigurer::disable);
-    http.authorizeHttpRequests((requests) ->
-            requests
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/csrf-token").permitAll()
-                .requestMatchers("/api/auth/public/**").permitAll()
-                .requestMatchers("/oauth2/**").permitAll()
-                .anyRequest().authenticated()
-        )
+    http.authorizeHttpRequests((requests)
+            -> requests
+            .requestMatchers("/api/admin/**").hasRole("ADMIN")
+            .requestMatchers("/api/csrf-token").permitAll()
+            .requestMatchers("/api/auth/public/**").permitAll()
+            .requestMatchers("/oauth2/**").permitAll()
+            .anyRequest().authenticated())
         .oauth2Login(oauth2 -> {
           oauth2.successHandler(oAuth2LoginSuccessHandler);
         });
-
     http.exceptionHandling(exception
         -> exception.authenticationEntryPoint(unauthorizedHandler));
     http.addFilterBefore(authenticationJwtTokenFilter(),
