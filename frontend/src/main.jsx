@@ -24,6 +24,12 @@ import SkillList from './pages/admin/skills/SkillList.jsx';
 import MyProfile from './pages/user/MyProfile.jsx';
 import UserWall from './pages/user/UserWall.jsx';
 
+import LearningPlans from './pages/learningPlans/LearningPlans';
+import CreateLearningPlan from './pages/learningPlans/CreateLearningPlan';
+import EditLearningPlan from './pages/learningPlans/EditLearningPlan';
+import ViewDetailedPlan from './pages/learningPlans/ViewDetailedPlan';
+
+
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
@@ -94,6 +100,10 @@ const router = createBrowserRouter([
         path: '*',
         element: <NotFound />,
       },
+      { path: '/plans', element: <LearningPlans /> },
+      { path: '/plans/create', element: <CreateLearningPlan /> },
+      { path: '/plans/edit/:id', element: <EditLearningPlan /> },
+      { path: '/plans/view/:id', element: <ViewDetailedPlan /> }, 
     ],
   },
 ]);

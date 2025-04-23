@@ -11,6 +11,7 @@ import Buttons from "../../utils/Button";
 import toast from "react-hot-toast";
 import { useMyContext } from "../../store/ContextApi";
 import { useEffect } from "react";
+import axios from 'axios'; // for raw csrf request
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -38,6 +39,19 @@ const Login = () => {
     mode: "onTouched",
   });
 
+  const fetchCsrfToken = async () => {
+    try {
+      const csrfResponse = await axios.get(`${apiUrl}/api/csrf-token`, {
+        withCredentials: true,
+      });
+      const csrfToken = csrfResponse.data.token;
+      localStorage.setItem('CSRF_TOKEN', csrfToken);
+    } catch (error) {
+      console.error('Failed to fetch CSRF token for login', error);
+      toast.error("CSRF protection failed. Please refresh the page.");
+    }
+  };
+
   const handleSuccessfulLogin = (token, decodedToken) => {
     const user = {
       username: decodedToken.sub,
@@ -53,38 +67,35 @@ const Login = () => {
   };
 
   //function for handle login with credentials
-  const onLoginHandler = async (data) => {
-    try {
-      setLoading(true);
-      const response = await api.post("/auth/public/signin", data);
+const onLoginHandler = async (data) => {
+  try {
+    setLoading(true);
 
-      //showing success message with react hot toast
-      toast.success("Login Successful");
+    // 👇 Fetch CSRF token before login
+    await fetchCsrfToken();
 
-      //reset the input field by using reset() function provided by react hook form after submission
-      reset();
+    const response = await api.post("/auth/public/signin", data);
 
-      if (response.status === 200 && response.data.jwtToken) {
-        setJwtToken(response.data.jwtToken);
-        const decodedToken = jwtDecode(response.data.jwtToken);
-        if (decodedToken.is2faEnabled) {
-          setStep(2); // Move to 2FA verification step
-        } else {
-          handleSuccessfulLogin(response.data.jwtToken, decodedToken);
-        }
+    toast.success("Login Successful");
+    reset();
+
+    if (response.status === 200 && response.data.jwtToken) {
+      setJwtToken(response.data.jwtToken);
+      const decodedToken = jwtDecode(response.data.jwtToken);
+      if (decodedToken.is2faEnabled) {
+        setStep(2);
       } else {
-        toast.error(
-          "Login failed. Please check your credentials and try again."
-        );
+        handleSuccessfulLogin(response.data.jwtToken, decodedToken);
       }
-    } catch (error) {
-      if (error) {
-        toast.error("Invalid credentials");
-      }
-    } finally {
-      setLoading(false);
+    } else {
+      toast.error("Login failed. Please check your credentials and try again.");
     }
-  };
+  } catch (error) {
+    toast.error("Invalid credentials");
+  } finally {
+    setLoading(false);
+  }
+};
 
   //function for verify 2fa authentication
   const onVerify2FaHandler = async (data) => {
