@@ -23,11 +23,18 @@ import UserDetails from './pages/admin/users/UserDetails.jsx';
 import SkillList from './pages/admin/skills/SkillList.jsx';
 import MyProfile from './pages/user/MyProfile.jsx';
 import UserWall from './pages/user/UserWall.jsx';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import LearningPlans from './pages/learningPlans/LearningPlans';
 import CreateLearningPlan from './pages/learningPlans/CreateLearningPlan';
 import EditLearningPlan from './pages/learningPlans/EditLearningPlan';
 import ViewDetailedPlan from './pages/learningPlans/ViewDetailedPlan';
+
+import CreateProgressEntry from './pages/progress/CreateProgressEntry';
+import PlanProgressPage from './pages/progress/PlanProgressPage';
+import UserProgress from './pages/progress/UserProgress';
+import EditProgressEntry from './pages/progress/EditProgressEntry';
+import AllProgressPosts from './pages/progress/AllProgressPosts';
 
 
 const router = createBrowserRouter([
@@ -104,6 +111,11 @@ const router = createBrowserRouter([
       { path: '/plans/create', element: <CreateLearningPlan /> },
       { path: '/plans/edit/:id', element: <EditLearningPlan /> },
       { path: '/plans/view/:id', element: <ViewDetailedPlan /> }, 
+      { path: '/progress/create/:planId', element: <CreateProgressEntry />},
+      { path: '/progress/plan/:planId', element: <PlanProgressPage />},
+      { path: '/progress/my', element: <UserProgress />},
+      { path: '/progress/edit/:entryId', element: <EditProgressEntry />},
+      { path: '/progress/all', element: <AllProgressPosts />},
     ],
   },
 ]);
