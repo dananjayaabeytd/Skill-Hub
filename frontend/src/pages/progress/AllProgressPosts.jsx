@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
-import { Card, Badge } from 'flowbite-react';
+import { Card, Badge, TextInput } from 'flowbite-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
+import { HiSearch } from 'react-icons/hi';
 
 const AllProgressPosts = () => {
   const [entries, setEntries] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -36,7 +38,13 @@ const AllProgressPosts = () => {
     },
   });
 
-  const chunks = chunkArray(entries, 4); // 4 cards per chunk
+  // Filter entries by search term
+  const filteredEntries = entries.filter((entry) =>
+    (entry.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (entry.description?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+  );
+
+  const chunks = chunkArray(filteredEntries, 4); // 4 cards per chunk
 
   return (
     <motion.section
@@ -53,14 +61,25 @@ const AllProgressPosts = () => {
         Community Progress Feed
       </motion.h2>
 
-      {entries.length === 0 ? (
+      {/* Search bar */}
+      <div className="mb-8 flex justify-center">
+        <TextInput
+          placeholder="Search by title or description..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full md:w-1/2"
+          icon={HiSearch}
+        />
+      </div>
+
+      {filteredEntries.length === 0 ? (
         <motion.p
           className="text-center text-gray-500"
           variants={fadeIn(0.1)}
           initial="hidden"
           animate="visible"
         >
-          No progress posts available yet.
+          No progress posts match your search.
         </motion.p>
       ) : (
         chunks.map((chunk, chunkIndex) => (
@@ -104,4 +123,5 @@ const AllProgressPosts = () => {
 };
 
 export default AllProgressPosts;
+
 
