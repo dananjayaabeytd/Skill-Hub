@@ -130,11 +130,8 @@ export function MenuBar() {
         <Dropdown.Item as={Link} to="/progress/all">
             View User Progress
           </Dropdown.Item>
-          <Dropdown.Item as={Link} to="/progress/start/${planId}">
-            Post Your Progress
-          </Dropdown.Item>
           <Dropdown.Item as={Link} to="/progress/my">
-            See Your Progress
+            View My Progress
           </Dropdown.Item>
         </Dropdown>
 
