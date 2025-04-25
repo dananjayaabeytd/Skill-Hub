@@ -45,7 +45,7 @@ const AllProgressPosts = () => {
       className="max-w-6xl mx-auto px-4 py-10"
     >
       <motion.h2
-        className="text-3xl font-bold mb-6"
+        className="text-3xl font-bold mb-10 text-center text-gray-800"
         variants={fadeIn(0)}
         initial="hidden"
         animate="visible"
@@ -54,36 +54,46 @@ const AllProgressPosts = () => {
       </motion.h2>
 
       {entries.length === 0 ? (
-        <motion.p className="text-gray-500" variants={fadeIn(0.1)} initial="hidden" animate="visible">
+        <motion.p
+          className="text-center text-gray-500"
+          variants={fadeIn(0.1)}
+          initial="hidden"
+          animate="visible"
+        >
           No progress posts available yet.
         </motion.p>
       ) : (
         chunks.map((chunk, chunkIndex) => (
           <motion.div
             key={chunkIndex}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"
+            className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12"
             variants={fadeIn(chunkIndex * 0.5)}
             initial="hidden"
             animate="visible"
           >
             {chunk.map((entry) => (
-              <Card key={entry.id} className="hover:shadow-md transition">
-                <h3 className="text-lg font-semibold">{entry.title}</h3>
-                <p className="text-sm text-gray-600 mb-2">{entry.description}</p>
-                <div className="flex flex-wrap gap-2 text-sm mb-2">
-                  <Badge color="info">{entry.templateType}</Badge>
-                  <Badge color="gray">{format(new Date(entry.date), 'yyyy-MM-dd')}</Badge>
+              <Card
+                key={entry.id}
+                className="hover:shadow-md transition-shadow duration-300 border border-gray-200 rounded-xl p-4 bg-white"
+              >
+                <div className="flex flex-col gap-2">
+                  <h3 className="text-xl font-semibold text-gray-800">{entry.title}</h3>
+                  <p className="text-sm text-gray-600">{entry.description}</p>
+                  <div className="flex flex-wrap gap-2 text-sm mt-2">
+                    <Badge color="info">{entry.templateType}</Badge>
+                    <Badge color="gray">{format(new Date(entry.date), 'yyyy-MM-dd')}</Badge>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-2">
+                    View followed plan:{' '}
+                    <span
+                      className="text-blue-600 underline cursor-pointer hover:text-blue-800"
+                      onClick={() => window.location.href = `/plans/view/${entry.planId}`}
+                    >
+                      {entry.planId}
+                    </span>{' '}
+                    | User ID: {entry.userId}
+                  </div>
                 </div>
-                <p className="text-xs text-gray-500">
-                  View followed plan:{' '}
-                  <span
-                    className="text-blue-600 underline cursor-pointer hover:text-blue-800"
-                    onClick={() => window.location.href = `/plans/view/${entry.planId}`}
-                  >
-                    {entry.planId}
-                  </span>{' '}
-                  | User ID: {entry.userId}
-                </p>
               </Card>
             ))}
           </motion.div>

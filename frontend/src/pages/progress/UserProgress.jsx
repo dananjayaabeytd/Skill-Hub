@@ -40,12 +40,23 @@ const UserProgress = () => {
       animate="visible"
       variants={fadeIn}
     >
-      <motion.h2 className="text-2xl font-bold mb-6" variants={fadeIn}>
+      <motion.h2 className="text-2xl font-bold mb-6 text-center" variants={fadeIn}>
         My Progress Entries
       </motion.h2>
       {Object.entries(grouped).map(([planId, items], index) => (
-        <motion.div key={planId} className="mb-10" variants={fadeIn}>
-          <h3 className="text-xl font-semibold mb-4">Plan ID: {planId}</h3>
+        <motion.div key={planId} className="mb-12" variants={fadeIn}>
+          <div className="bg-gray-100 px-4 py-2 rounded-md shadow-sm border border-gray-200 mb-6">
+            <h3 className="text-lg font-semibold text-gray-700">
+              Progress for Plan:{' '}
+              <span
+                className="text-blue-600 underline cursor-pointer hover:text-blue-800"
+                onClick={() => navigate(`/plans/view/${planId}`)}
+              >
+                {planId}
+              </span>
+            </h3>
+          </div>
+
           <div className="space-y-4">
             {items.map((entry) => (
               <motion.div key={entry.id} variants={fadeIn}>
@@ -73,3 +84,4 @@ const UserProgress = () => {
 };
 
 export default UserProgress;
+
