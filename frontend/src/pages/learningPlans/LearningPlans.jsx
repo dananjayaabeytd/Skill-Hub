@@ -154,16 +154,17 @@ const LearningPlans = () => {
             >
             <Card className="relative hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between">
             <Button
-              size="xs"
-              className="absolute top-2 right-2 z-20"
-              color="purple"
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/progress/start/${plan.id}`);
-              }}
-            >
-              + Progress
+                size="xs"
+                className="absolute top-2 right-2 z-20"
+                gradientDuoTone="purpleToBlue"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/progress/start/${plan.id}/select-template`);
+                }}
+              >
+                + Progress
             </Button>
+
               <div>
                 <h5 className="text-xl font-semibold">{plan.title}</h5>
                 <p className="text-gray-600 mb-3">{plan.description}</p>

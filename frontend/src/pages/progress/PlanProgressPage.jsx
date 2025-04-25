@@ -88,11 +88,12 @@ const PlanProgressPage = () => {
               {showSidebar ? 'Hide Insights' : 'Show Insights'}
             </Button>
             <Button
-              onClick={() => navigate(`/progress/start/${planId}`)}
-              gradientDuoTone="purpleToBlue"
-            >
-              + Add Progress
-            </Button>
+              onClick={() => navigate(`/progress/start/${planId}/select-template`)}
+                gradientDuoTone="purpleToBlue"
+              >
+                + Add Progress
+              </Button>
+
           </div>
         </div>
 

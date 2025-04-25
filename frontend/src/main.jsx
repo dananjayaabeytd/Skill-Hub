@@ -34,7 +34,6 @@ import PlanProgressPage from './pages/progress/PlanProgressPage';
 import UserProgress from './pages/progress/UserProgress';
 import EditProgressEntry from './pages/progress/EditProgressEntry';
 import AllProgressPosts from './pages/progress/AllProgressPosts';
-import ProgressCreateLanding from './pages/progress/ProgressCreateLanding.jsx';
 import TemplateSelectionPage from './pages/progress/TemplateSelectionPage.jsx';
 
 
@@ -117,7 +116,6 @@ const router = createBrowserRouter([
       { path: '/progress/my', element: <UserProgress />},
       { path: '/progress/edit/:entryId', element: <EditProgressEntry />},
       { path: '/progress/all', element: <AllProgressPosts />},
-      { path: '/progress/start/:planId', element: <ProgressCreateLanding />},
       { path: '/progress/start/:planId/select-template', element: <TemplateSelectionPage />},
     
     ],
