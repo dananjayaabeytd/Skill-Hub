@@ -121,6 +121,23 @@ export function MenuBar() {
             Create Plan
           </Dropdown.Item>
         </Dropdown>
+
+        <Dropdown
+          inline
+          label="Progress"
+          className="text-gray-700 hover:text-blue-700 font-medium"
+        >
+        <Dropdown.Item as={Link} to="/progress/all">
+            View User Progress
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/progress/start/${planId}">
+            Post Your Progress
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/progress/my">
+            See Your Progress
+          </Dropdown.Item>
+        </Dropdown>
+
       </Navbar.Collapse>
     </Navbar>
   );

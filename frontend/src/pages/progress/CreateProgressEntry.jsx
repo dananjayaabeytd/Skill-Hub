@@ -4,14 +4,15 @@ import { Button, Card, Label, Select, TextInput, Textarea } from 'flowbite-react
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 
+
 const CreateProgressEntry = () => {
-  const { planId } = useParams();
+  const { planId, templateType } = useParams(); // accept optional templateType
   const navigate = useNavigate();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
-  const [templateType, setTemplateType] = useState('CERTIFICATE');
+  const [template, setTemplate] = useState(templateType || 'CERTIFICATE'); // use from URL or fallback
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +21,7 @@ const CreateProgressEntry = () => {
         title,
         description,
         date,
-        templateType,
+        templateType: template,
       });
       toast.success('Progress entry created!');
       navigate(`/plans/view/${planId}`);
@@ -37,26 +38,50 @@ const CreateProgressEntry = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <Label htmlFor="title" value="Title" />
-            <TextInput id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <TextInput
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
           </div>
           <div>
             <Label htmlFor="description" value="Description" />
-            <Textarea id="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
+            <Textarea
+              id="description"
+              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
           <div>
             <Label htmlFor="date" value="Date" />
-            <TextInput type="date" id="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+            <TextInput
+              type="date"
+              id="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
           </div>
           <div>
             <Label htmlFor="templateType" value="Template Type" />
-            <Select id="templateType" value={templateType} onChange={(e) => setTemplateType(e.target.value)}>
+            <Select
+              id="templateType"
+              value={template}
+              onChange={(e) => setTemplate(e.target.value)}
+            >
               <option value="CERTIFICATE">Certificate</option>
-              <option value="SKILL">Skill</option>
-              <option value="MILESTONE">Milestone</option>
-              <option value="DAILY_LOG">Daily Log</option>
+              <option value="CERTIFICATE2">Certificate 2</option>
+              <option value="PROJECT">Project</option>
+              <option value="PROJECT2">Project 2</option>
+              <option value="WORKSHOP">Workshop</option>
+              <option value="WORKSHOP2">Workshop 2</option>
             </Select>
           </div>
-          <Button type="submit" gradientDuoTone="purpleToBlue">Submit Progress</Button>
+          <Button type="submit" gradientDuoTone="purpleToBlue">
+            Submit Progress
+          </Button>
         </form>
       </Card>
     </section>
