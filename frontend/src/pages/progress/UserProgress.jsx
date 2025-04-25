@@ -45,16 +45,17 @@ const UserProgress = () => {
       </motion.h2>
       {Object.entries(grouped).map(([planId, items], index) => (
         <motion.div key={planId} className="mb-12" variants={fadeIn}>
-          <div className="bg-gray-100 px-4 py-2 rounded-md shadow-sm border border-gray-200 mb-6">
+          <div className="bg-gray-100 px-4 py-2 rounded-md shadow-sm border border-gray-200 mb-6 flex justify-between items-center">
             <h3 className="text-lg font-semibold text-gray-700">
               Progress for Plan:{' '}
-              <span
-                className="text-blue-600 underline cursor-pointer hover:text-blue-800"
-                onClick={() => navigate(`/plans/view/${planId}`)}
-              >
-                {planId}
-              </span>
+              <span className="text-gray-900 font-medium">{planId}</span>
             </h3>
+            <span
+              className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800"
+              onClick={() => navigate(`/progress/plan/${planId}`)}
+            >
+              Track my progress on this plan
+            </span>
           </div>
 
           <div className="space-y-4">

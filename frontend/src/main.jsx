@@ -30,7 +30,6 @@ import CreateLearningPlan from './pages/learningPlans/CreateLearningPlan';
 import EditLearningPlan from './pages/learningPlans/EditLearningPlan';
 import ViewDetailedPlan from './pages/learningPlans/ViewDetailedPlan';
 
-import CreateProgressEntry from './pages/progress/CreateProgressEntry';
 import PlanProgressPage from './pages/progress/PlanProgressPage';
 import UserProgress from './pages/progress/UserProgress';
 import EditProgressEntry from './pages/progress/EditProgressEntry';
@@ -114,14 +113,13 @@ const router = createBrowserRouter([
       { path: '/plans/edit/:id', element: <EditLearningPlan /> },
       { path: '/plans/view/:id', element: <ViewDetailedPlan /> }, 
       
-      { path: '/progress/create/:planId', element: <CreateProgressEntry />},
       { path: '/progress/plan/:planId', element: <PlanProgressPage />},
       { path: '/progress/my', element: <UserProgress />},
       { path: '/progress/edit/:entryId', element: <EditProgressEntry />},
       { path: '/progress/all', element: <AllProgressPosts />},
       { path: '/progress/start/:planId', element: <ProgressCreateLanding />},
       { path: '/progress/start/:planId/select-template', element: <TemplateSelectionPage />},
-      { path: '/progress/start/:planId/:templateType', element: <CreateProgressEntry />},
+    
     ],
   },
 ]);
