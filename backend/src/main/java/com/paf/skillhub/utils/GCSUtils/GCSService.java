@@ -22,13 +22,15 @@ public class GCSService {
   private static final String BUCKET_NAME = "skill-hub";
   private static final String SERVICE_ACCOUNT_KEY_PATH = getPathToGoogleCredentials();
 
-  private static String getPathToGoogleCredentials() {
+  private static String getPathToGoogleCredentials()
+  {
     String currentDirectory = System.getProperty("user.dir");
     Path filePath = Paths.get(currentDirectory, "gcs.json");
     return filePath.toString();
   }
 
-  public GCSService() throws IOException {
+  public GCSService() throws IOException
+  {
     this.storage = StorageOptions.newBuilder()
         .setCredentials(ServiceAccountCredentials.fromStream(new FileInputStream(SERVICE_ACCOUNT_KEY_PATH)))
         .build()
@@ -59,7 +61,9 @@ public class GCSService {
 
       // Optionally delete the local file
       Files.delete(filePath);
-    } catch (Exception e) {
+    }
+    catch (Exception e)
+    {
       System.out.println(e.getMessage());
       res.setStatus(500);
       res.setMessage(e.getMessage());
