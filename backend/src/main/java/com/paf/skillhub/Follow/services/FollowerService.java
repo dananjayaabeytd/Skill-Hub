@@ -3,6 +3,8 @@ package com.paf.skillhub.Follow.services;
 import com.paf.skillhub.Follow.DTOs.FollowerDTO;
 import com.paf.skillhub.Follow.models.Follower;
 import com.paf.skillhub.Follow.repositories.FollowerRepository;
+import com.paf.skillhub.Notification.Enums.NotificationType;
+import com.paf.skillhub.Notification.services.NotificationService;
 import com.paf.skillhub.User.dtos.UserDTO;
 import com.paf.skillhub.User.models.User;
 import com.paf.skillhub.User.repositories.UserRepository;
@@ -19,6 +21,9 @@ public class FollowerService {
 
   @Autowired
   private FollowerRepository followerRepository;
+
+  @Autowired
+  private NotificationService notificationService;
 
   @Autowired
   private UserRepository userRepository;
@@ -45,6 +50,9 @@ public class FollowerService {
     follower.setCreatedAt(LocalDateTime.now());
 
     followerRepository.save(follower);
+
+    String message = followerUser.getUserName() + " started following you.";
+    notificationService.createNotification(userId,followerUserId, NotificationType.FOLLOW,message);
   }
 
   @Transactional

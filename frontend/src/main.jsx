@@ -22,7 +22,8 @@ import UserList from './pages/admin/users/UserList.jsx';
 import UserDetails from './pages/admin/users/UserDetails.jsx';
 import SkillList from './pages/admin/skills/SkillList.jsx';
 import MyProfile from './pages/user/MyProfile.jsx';
-import UserWall from './pages/user/UserWall.jsx';
+import MyWall from './pages/user/MyWall.jsx';
+import Userwall from './pages/user/UserWall.jsx';
 
 const router = createBrowserRouter([
   {
@@ -51,8 +52,12 @@ const router = createBrowserRouter([
         element: <UserDetails />,
       },
       {
+        path: '/user-wall/:userId',
+        element: <Userwall/>,
+      },
+      {
         path: '/my-wall',
-        element: <UserWall />,
+        element: <MyWall />,
       },
       {
         path: '/admin-dashboard',

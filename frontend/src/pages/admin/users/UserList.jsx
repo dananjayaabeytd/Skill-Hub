@@ -91,6 +91,22 @@ const UserList = () => {
     navigate(`/admin/users/${userId}`);
   };
 
+  const handleDeleteUser = async (userId) => {
+    try {
+      setLoading(true);
+      await api.delete(`/admin/delete-user/${userId}`);
+      
+      // Remove the deleted user from state
+      setUsers(users.filter(user => user.userId !== userId));
+      toast.success('User deleted successfully');
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      toast.error(err?.response?.data?.message || 'Error deleting user');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -321,7 +337,13 @@ const UserList = () => {
                             color="light"
                           >
                             <Dropdown.Item icon={HiOutlinePencilAlt}>Edit</Dropdown.Item>
-                            <Dropdown.Item icon={HiOutlineTrash} className="text-red-600">Delete</Dropdown.Item>
+                            <Dropdown.Item 
+      icon={HiOutlineTrash} 
+      className="text-red-600"
+      onClick={() => handleDeleteUser(user.id)}
+    >
+      Delete
+    </Dropdown.Item>
                           </Dropdown>
                         </div>
                       </Table.Cell>
