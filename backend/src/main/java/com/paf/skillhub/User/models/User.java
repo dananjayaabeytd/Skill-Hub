@@ -9,8 +9,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -21,7 +22,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @Table(name = "users",
     uniqueConstraints = {
@@ -65,7 +68,7 @@ public class User {
 
   @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
   @JoinColumn(name = "role_id", referencedColumnName = "role_id")
-  @ToString.Exclude
+  @ToString.Exclude // Prevent circular reference
   private Role role;
 
   @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -73,6 +76,7 @@ public class User {
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "skill_id"))
   @JsonManagedReference
+  @ToString.Exclude // Prevent circular reference
   private Set<Skill> skills = new HashSet<>();
 
   @CreationTimestamp
@@ -82,13 +86,14 @@ public class User {
   @UpdateTimestamp
   private LocalDateTime updatedDate;
 
-  // Add these to your User class if desired for easier querying
   @OneToMany(mappedBy = "user")
   @JsonIgnore
+  @ToString.Exclude // Prevent circular reference
   private Set<Follower> followers = new HashSet<>();
 
   @OneToMany(mappedBy = "followerUser")
   @JsonIgnore
+  @ToString.Exclude // Prevent circular reference
   private Set<Follower> following = new HashSet<>();
 
   public User(String userName, String email, String password) {

@@ -4,6 +4,7 @@ import { IoMenu } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
 import { useMyContext } from '../../store/ContextApi.jsx';
 import NotificationBell from '../../utils/NotificationBell.jsx';
+import GlobalSearch from './GlobalSearch.jsx';
 
 export function MenuBar() {
   //handle the header opening and closing menu for the tablet/mobile device
@@ -32,6 +33,11 @@ export function MenuBar() {
           Skill Hub
         </span>
       </Navbar.Brand>
+
+      {/* Center-right - Search */}
+      <div className="flex-grow mx-4 hidden md:block md:max-w-sm lg:max-w-md">
+        <GlobalSearch />
+      </div>
       <div className='flex md:order-2'>
         {token ? (
           <div className='flex items-center gap-3'>
@@ -54,7 +60,7 @@ export function MenuBar() {
             >
               <Dropdown.Header>
                 <span className='block truncate text-sm font-medium'>
-                  {currentUser?.name || 'User'}
+                  {currentUser?.username || 'User'}
                 </span>
               </Dropdown.Header>
               {isAdmin && (
@@ -104,10 +110,7 @@ export function MenuBar() {
           Services
         </Navbar.Link>
         <Navbar.Link as={Link} to='/pricing' active={pathName === '/pricing'}>
-          Pricing
-        </Navbar.Link>
-        <Navbar.Link as={Link} to='/contact' active={pathName === '/contact'}>
-          Contact
+          Premium
         </Navbar.Link>
       </Navbar.Collapse>
     </Navbar>

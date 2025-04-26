@@ -36,4 +36,7 @@ public interface UserService {
 
   User registerUser(User user);
 
+  void deleteUser(Long userId);
+
+  List<User> getUsersByRole(String roleName);
 }

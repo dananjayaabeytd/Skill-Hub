@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -20,15 +20,20 @@ import {
   HiOutlineCog,
   HiOutlineX,
   HiOutlineExternalLink,
+  HiOutlineUserAdd,
+  HiOutlineUserRemove,
 } from 'react-icons/hi';
 
 import api from '../../services/api';
 import Errors from '../../components/Error';
 import { useMyContext } from '../../store/ContextApi';
+import CreatePost from '../posts/CreatePost';
+import PostList from '../posts/PostList';
 
 const UserWall = () => {
   const { currentUser } = useMyContext();
-  const userId = currentUser?.id;
+  const { userId } = useParams();
+  const currentUserId = currentUser?.id;
 
   const [activeTab, setActiveTab] = useState('info');
   const [loading, setLoading] = useState(true);
@@ -38,6 +43,10 @@ const UserWall = () => {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [error, setError] = useState(null);
+  
+  // New state for follow functionality
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
 
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
@@ -46,7 +55,92 @@ const UserWall = () => {
   const [loadingFollowers, setLoadingFollowers] = useState(false);
   const [loadingFollowing, setLoadingFollowing] = useState(false);
 
+  // Inside the MyWall component, add this state
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+
   const navigate = useNavigate();
+
+  const handlePostCreated = newPost => {
+    toast.success('Post created successfully!');
+    // If you have a posts state, you could update it here
+    // setUserPosts(prev => [newPost, ...prev]);
+  };
+  
+  // Check if current user is following the profile user
+  const checkFollowStatus = useCallback(async () => {
+    // Only check follow status if viewing someone else's profile
+    if (!currentUserId || !userId || currentUserId === parseInt(userId)) {
+      return;
+    }
+    
+    try {
+      const response = await api.get(`/followers/check`, {
+        params: {
+          userId: userId,
+          followerUserId: currentUserId
+        }
+      });
+      setIsFollowing(response.data);
+    } catch (err) {
+      console.error('Error checking follow status', err);
+      setIsFollowing(false);
+    }
+  }, [currentUserId, userId]);
+
+  // Follow user function
+  const handleFollowUser = async () => {
+    if (!currentUserId || !userId) {
+      toast.error('You need to be logged in to follow users');
+      return;
+    }
+    
+    setFollowLoading(true);
+    try {
+      await api.post('/followers/follow', null, {
+        params: {
+          userId: userId,
+          followerUserId: currentUserId
+        }
+      });
+      
+      setIsFollowing(true);
+      // Update followers count
+      setFollowersCount(prev => prev + 1);
+      toast.success(`You are now following ${user.userName}`);
+    } catch (err) {
+      console.error('Error following user', err);
+      toast.error('Failed to follow user');
+    } finally {
+      setFollowLoading(false);
+    }
+  };
+
+  // Unfollow user function
+  const handleUnfollowUser = async () => {
+    if (!currentUserId || !userId) {
+      return;
+    }
+    
+    setFollowLoading(true);
+    try {
+      await api.delete('/followers/unfollow', {
+        params: {
+          userId: userId,
+          followerUserId: currentUserId
+        }
+      });
+      
+      setIsFollowing(false);
+      // Update followers count
+      setFollowersCount(prev => Math.max(prev - 1, 0));
+      toast.success(`You have unfollowed ${user.userName}`);
+    } catch (err) {
+      console.error('Error unfollowing user', err);
+      toast.error('Failed to unfollow user');
+    } finally {
+      setFollowLoading(false);
+    }
+  };
 
   const fetchFollowers = async () => {
     if (!userId) return;
@@ -191,13 +285,68 @@ const UserWall = () => {
     fetchUserDetails();
     fetchUserSkills();
     fetchSocialStats();
-  }, [fetchUserDetails, fetchUserSkills, fetchSocialStats]);
+    checkFollowStatus();
+  }, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
+
+  // Render follow/unfollow button based on conditions
+  const renderFollowButton = () => {
+    // Don't show follow button on your own profile
+    if (!currentUserId || currentUserId === parseInt(userId)) {
+      return (
+        <motion.div
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Button
+            gradientDuoTone='purpleToPink'
+            size='sm'
+            onClick={() => navigate('/account-settings')}
+            className='w-full shadow-sm transition-all font-medium'
+          >
+            Edit Profile
+          </Button>
+        </motion.div>
+      );
+    }
+    
+    return (
+      <motion.div
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <Button
+          gradientDuoTone={isFollowing ? 'cyanToBlue' : 'purpleToPink'}
+          size='sm'
+          onClick={isFollowing ? handleUnfollowUser : handleFollowUser}
+          className='w-full shadow-sm transition-all font-medium'
+          disabled={followLoading}
+        >
+          {followLoading ? (
+            <div className="flex items-center justify-center">
+              <Spinner size="sm" className="mr-2" />
+              <span>Processing</span>
+            </div>
+          ) : isFollowing ? (
+            <div className="flex items-center">
+              <HiOutlineUserRemove className="mr-2" />
+              <span>Unfollow</span>
+            </div>
+          ) : (
+            <div className="flex items-center">
+              <HiOutlineUserAdd className="mr-2" />
+              <span>Follow</span>
+            </div>
+          )}
+        </Button>
+      </motion.div>
+    );
+  };
 
   if (loading) {
     return (
       <div className='flex flex-col justify-center items-center h-64'>
         <Spinner size='xl' color='info' />
-        <p className='mt-4 text-gray-600'>Loading your profile...</p>
+        <p className='mt-4 text-gray-600'>Loading profile...</p>
       </div>
     );
   }
@@ -212,7 +361,7 @@ const UserWall = () => {
         <h2 className='text-2xl font-bold text-gray-800'>
           Profile not available
         </h2>
-        <p className='text-gray-600 mt-2'>Please log in to view your wall.</p>
+        <p className='text-gray-600 mt-2'>Please log in to view this profile.</p>
         <Button
           color='purple'
           className='mt-4'
@@ -223,6 +372,9 @@ const UserWall = () => {
       </div>
     );
   }
+
+  // Is this the current user's own profile?
+  const isOwnProfile = currentUserId === parseInt(userId);
 
   return (
     <motion.div
@@ -265,9 +417,11 @@ const UserWall = () => {
                     <h1 className='text-2xl font-extrabold text-gray-800 mr-2'>
                       {user.userName}
                     </h1>
-                    <span className='text-sm text-white bg-purple-500 py-0.5 px-3 rounded-full font-medium'>
-                      You
-                    </span>
+                    {isOwnProfile && (
+                      <span className='text-sm text-white bg-purple-500 py-0.5 px-3 rounded-full font-medium'>
+                        You
+                      </span>
+                    )}
                   </div>
 
                   <p className='text-gray-600 flex items-center mt-1.5 font-medium'>
@@ -358,34 +512,8 @@ const UserWall = () => {
                     </div>
                   </div>
 
-                  {/* Edit profile button with better styling */}
-                  <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button
-                      gradientDuoTone='purpleToPink'
-                      size='sm'
-                      onClick={() => navigate('/account-settings')}
-                      className='w-full shadow-sm transition-all font-medium'
-                    >
-                      <svg
-                        className='w-4 h-4 mr-2'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'
-                        xmlns='http://www.w3.org/2000/svg'
-                      >
-                        <path
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          strokeWidth={2}
-                          d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'
-                        />
-                      </svg>
-                      Edit Profile
-                    </Button>
-                  </motion.div>
+                  {/* Follow/Unfollow or Edit Profile button */}
+                  {renderFollowButton()}
                 </div>
               </div>
             </div>
@@ -426,19 +554,6 @@ const UserWall = () => {
                         </div>
                       ) : skills && skills.length > 0 ? (
                         <div className='space-y-4'>
-                          {/* <div className='flex flex-wrap gap-2 mb-4'>
-                            {skills.map(skill => (
-                              <Badge
-                                key={skill.skillId}
-                                color='purple'
-                                size='lg'
-                                className='px-3 py-2 text-sm font-medium'
-                              >
-                                {skill.skillName}
-                              </Badge>
-                            ))}
-                          </div> */}
-
                           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                             {skills.map(skill => (
                               <div
@@ -488,14 +603,16 @@ const UserWall = () => {
                           <p className='mt-2 text-gray-600 font-medium'>
                             No skills added yet
                           </p>
-                          <Button
-                            color='purple'
-                            size='xs'
-                            onClick={() => navigate('/preferences')}
-                            className='mt-3'
-                          >
-                            Add Skills
-                          </Button>
+                          {isOwnProfile && (
+                            <Button
+                              color='purple'
+                              size='xs'
+                              onClick={() => navigate('/preferences')}
+                              className='mt-3'
+                            >
+                              Add Skills
+                            </Button>
+                          )}
                         </div>
                       )}
                     </div>
@@ -555,27 +672,13 @@ const UserWall = () => {
                 title='Posts'
                 icon={HiOutlineDocumentText}
               >
-                {/* Posts Tab */}
                 <div className='py-4'>
-                  <div className='flex flex-wrap gap-2 mb-4'>
-                    <h3 className='text-xl font-semibold mb-4'>My Posts</h3>
-                    <Button
-                      color='purple'
-                      onClick={() => navigate('/posts/new')}
-                    >
-                      Create New Post
-                    </Button>
-                  </div>
-
-                  <div className='text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300'>
-                    <HiOutlineDocumentText className='mx-auto h-12 w-12 text-gray-400' />
-                    <p className='mt-2 text-gray-600 font-medium'>
-                      No posts yet
-                    </p>
-                    <p className='text-sm text-gray-500 mb-4'>
-                      Share your knowledge and experiences with the community
-                    </p>
-                  </div>
+                  <PostList
+                    userId={userId}
+                    showCreateButton={isOwnProfile}
+                    publicOnly={true}
+                    onCreateClick={() => setShowCreatePostModal(true)}
+                  />
                 </div>
               </Tabs.Item>
 
@@ -599,12 +702,14 @@ const UserWall = () => {
                           Customize your experience by updating your
                           preferences.
                         </p>
-                        <Button
-                          color='light'
-                          onClick={() => navigate('/preferences')}
-                        >
-                          Manage Preferences
-                        </Button>
+                        {isOwnProfile && (
+                          <Button
+                            color='light'
+                            onClick={() => navigate('/preferences')}
+                          >
+                            Manage Preferences
+                          </Button>
+                        )}
                       </div>
                     </div>
 
@@ -615,12 +720,14 @@ const UserWall = () => {
                         <p className='text-gray-600 mb-4'>
                           Manage your account security settings and password.
                         </p>
-                        <Button
-                          color='light'
-                          onClick={() => navigate('/profile')}
-                        >
-                          Security Settings
-                        </Button>
+                        {isOwnProfile && (
+                          <Button
+                            color='light'
+                            onClick={() => navigate('/profile')}
+                          >
+                            Security Settings
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -630,6 +737,7 @@ const UserWall = () => {
           </Card>
         </motion.div>
       </div>
+
       <AnimatePresence>
         {showFollowersModal && (
           <div className='fixed inset-0 z-50 flex items-center justify-center'>
@@ -704,7 +812,7 @@ const UserWall = () => {
                             color='light'
                             onClick={() => {
                               setShowFollowersModal(false);
-                              navigate(`/users/${follower.followerUserId}`);
+                              navigate(`/user-wall/${follower.followerUserId}`);
                             }}
                           >
                             <HiOutlineExternalLink className='h-4 w-4' />
@@ -811,7 +919,7 @@ const UserWall = () => {
                             color='light'
                             onClick={() => {
                               setShowFollowingModal(false);
-                              navigate(`/users/${following.followerUserId}`);
+                              navigate(`/user-wall/${following.followerUserId}`);
                             }}
                           >
                             <HiOutlineExternalLink className='h-4 w-4' />
@@ -844,6 +952,12 @@ const UserWall = () => {
           </div>
         )}
       </AnimatePresence>
+      <CreatePost
+        isOpen={showCreatePostModal}
+        onClose={() => setShowCreatePostModal(false)}
+        userId={userId}
+        onPostCreated={handlePostCreated}
+      />
     </motion.div>
   );
 };
