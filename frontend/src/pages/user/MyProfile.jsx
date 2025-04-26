@@ -175,7 +175,7 @@ const MyProfile = () => {
       formData.append('userId', currentUser.id);
       formData.append('password', newPassword);
 
-      await api.put(`/admin/update-password`, formData, {
+      await api.put(`/auth/public/reset-password`, formData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
