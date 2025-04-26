@@ -3,6 +3,7 @@ package com.paf.skillhub.User.controllers;
 import com.paf.skillhub.Auth.models.Role;
 import com.paf.skillhub.Skill.DTOs.SkillDTO;
 import com.paf.skillhub.User.dtos.UserDTO;
+import com.paf.skillhub.User.models.User;
 import com.paf.skillhub.User.services.UserService;
 import com.paf.skillhub.User.services.UserSkillService;
 import java.util.List;
@@ -39,5 +40,11 @@ public class UserController {
   @GetMapping("/roles")
   public List<Role> getAllRoles() {
     return userService.getAllRoles();
+  }
+
+  @GetMapping("/getusers")
+  public ResponseEntity<List<User>> getAllUsers() {
+    return new ResponseEntity<>(userService.getAllUsers(),
+        HttpStatus.OK);
   }
 }
