@@ -5,6 +5,7 @@ import { RxCross2 } from 'react-icons/rx';
 import { useMyContext } from '../../store/ContextApi.jsx';
 import NotificationBell from '../../utils/NotificationBell.jsx';
 import GlobalSearch from './GlobalSearch.jsx';
+import api from '../../services/api.js';
 
 export function MenuBar() {
   //handle the header opening and closing menu for the tablet/mobile device
@@ -14,6 +15,28 @@ export function MenuBar() {
   // Access the states by using the useMyContext hook from the ContextProvider
   const { token, setToken, currentUser, setCurrentUser, isAdmin, setIsAdmin } =
     useMyContext();
+
+    // Handle premium checkout process
+const handlePremiumCheckout = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await api.post('/payment/checkout', {
+      amount: 100,
+      quantity: 1,
+      currency: "USD",
+      name: "Premium"
+    });
+    
+    if (response.data.status === "SUCCESS" && response.data.sessionUrl) {
+      // Open payment URL in a new tab
+      window.open(response.data.sessionUrl, '_blank');
+    } else {
+      console.error('Payment session creation failed');
+    }
+  } catch (err) {
+    console.error('Error initiating payment:', err);
+  }
+};
 
   const handleLogout = () => {
     localStorage.removeItem('JWT_TOKEN');
@@ -109,9 +132,11 @@ export function MenuBar() {
         <Navbar.Link as={Link} to='/services' active={pathName === '/services'}>
           Services
         </Navbar.Link>
-        <Navbar.Link as={Link} to='/pricing' active={pathName === '/pricing'}>
-          Premium
+        {token && (
+        <Navbar.Link href="#" onClick={handlePremiumCheckout} active={pathName === '/pricing'}>
+          Get Premium
         </Navbar.Link>
+      )}
       </Navbar.Collapse>
     </Navbar>
   );
