@@ -64,6 +64,7 @@ public class SecurityConfig {
     http.csrf(csrf ->
         csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .ignoringRequestMatchers("/api/auth/public/**")
+            .ignoringRequestMatchers("/api/payment/**")
             .ignoringRequestMatchers("/api/admin/**")
     );
 
@@ -76,6 +77,7 @@ public class SecurityConfig {
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .requestMatchers("/api/csrf-token").permitAll()
             .requestMatchers("/api/auth/public/**").permitAll()
+            .requestMatchers("/api/payment/**").permitAll()
             .requestMatchers("/oauth2/**").permitAll()
             .anyRequest().authenticated())
         .oauth2Login(oauth2 -> {
