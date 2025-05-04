@@ -24,6 +24,7 @@ import SkillList from './pages/admin/skills/SkillList.jsx';
 import MyProfile from './pages/user/MyProfile.jsx';
 import MyWall from './pages/user/MyWall.jsx';
 import Userwall from './pages/user/UserWall.jsx';
+import PaymentSuccess from './pages/payment/PaymentSuccess.jsx';
 
 const router = createBrowserRouter([
   {
@@ -98,6 +99,14 @@ const router = createBrowserRouter([
       {
         path: '*',
         element: <NotFound />,
+      },
+      {
+        path: '/payment/success',
+        element: <PaymentSuccess />,
+      },
+      {
+        path: '/payment/success',
+        element: <PaymentSuccess />,
       },
     ],
   },
