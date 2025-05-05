@@ -67,7 +67,8 @@ const PlanProgressPage = () => {
   );
 
   return (
-    <div className="relative max-w-7xl mx-auto py-10 px-4 flex gap-6">
+    <div className="relative max-w mx-auto py-10 px-4 flex gap-6 bg-[#f9fafb] min-h-screen">
+
       {/* Main Content */}
       <div className="flex-1">
         <div className="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-2">
@@ -108,25 +109,28 @@ const PlanProgressPage = () => {
         </div>
 
         {/* Entries List */}
-        <div className="space-y-6">
+        <div className="flex flex-col items-center gap-6">
           {entries.map((entry) => (
-            <ProgressCard
-              key={entry.id}
-              entry={entry}
-              isOwner={true}
-              onEdit={() => navigate(`/progress/edit/${entry.id}`)}
-              onDelete={async () => {
-                try {
-                  await api.delete(`/progress/${entry.id}`);
-                  toast.success('Entry deleted');
-                  fetchEntries();
-                } catch (err) {
-                  toast.error('Failed to delete entry');
-                }
-              }}
-            />
+            <div key={entry.id} className="w-full max-w-3xl">
+              <ProgressCard
+                entry={entry}
+                user={{ userName: entry.userName, userImage: entry.userImage }}
+                isOwner={true}
+                onEdit={() => navigate(`/progress/edit/${entry.id}`)}
+                onDelete={async () => {
+                  try {
+                    await api.delete(`/progress/${entry.id}`);
+                    toast.success('Entry deleted');
+                    fetchEntries();
+                  } catch (err) {
+                    toast.error('Failed to delete entry');
+                  }
+                }}
+              />
+            </div>
           ))}
         </div>
+
       </div>
 
       {/* Insights Sidebar */}
