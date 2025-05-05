@@ -1,17 +1,36 @@
 import React from 'react';
-import { Card, Badge } from 'flowbite-react';
+import { Badge, Avatar } from 'flowbite-react';
 import { format } from 'date-fns';
 import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
 
-const ProgressCard = ({ entry, isOwner, onEdit, onDelete }) => {
+const ProgressCard = ({ entry, user, isOwner, onEdit, onDelete }) => {
   return (
-    <Card className="hover:shadow-md transition">
-      <h3 className="text-lg font-semibold">{entry.title}</h3>
-      <p className="text-sm text-gray-600 mb-2">{entry.description}</p>
-      <div className="flex flex-wrap gap-2 text-sm mb-2">
+    <div className="border border-gray-300 p-4 bg-white shadow-sm hover:shadow-md transition">
+      {/* User Info */}
+      <div className="flex items-center mb-3">
+        <Avatar
+          size="sm"
+          rounded
+          img={
+            user?.userImage ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.userName)}&background=random`
+          }
+          alt={user?.userName}
+        />
+        <span className="ml-3 text-sm font-medium text-gray-800">
+          {user?.userName}
+        </span>
+      </div>
+
+      {/* Entry Content */}
+      <h3 className="text-lg font-semibold text-gray-800">{entry.title}</h3>
+      <p className="text-sm text-gray-700 mt-1 mb-2 whitespace-pre-line">{entry.description}</p>
+
+      <div className="flex flex-wrap gap-2 text-sm mb-3">
         <Badge color="info">{entry.templateType}</Badge>
         <Badge color="gray">{format(new Date(entry.date), 'yyyy-MM-dd')}</Badge>
       </div>
+
       <p className="text-xs text-gray-500">
         Plan ID: {entry.planId} | User ID: {entry.userId}
       </p>
@@ -34,7 +53,7 @@ const ProgressCard = ({ entry, isOwner, onEdit, onDelete }) => {
           </button>
         </div>
       )}
-    </Card>
+    </div>
   );
 };
 
