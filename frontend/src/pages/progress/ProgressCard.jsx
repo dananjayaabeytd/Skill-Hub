@@ -3,7 +3,7 @@ import { Badge, Avatar } from 'flowbite-react';
 import { format } from 'date-fns';
 import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
 
-const ProgressCard = ({ entry, user, isOwner, onEdit, onDelete }) => {
+const ProgressCard = ({ entry, isOwner, onEdit, onDelete }) => {
   return (
     <div className="border border-gray-300 p-4 bg-white shadow-sm hover:shadow-md transition">
       {/* User Info */}
@@ -12,13 +12,14 @@ const ProgressCard = ({ entry, user, isOwner, onEdit, onDelete }) => {
           size="sm"
           rounded
           img={
-            user?.userImage ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.userName)}&background=random`
+            entry.userImage && entry.userImage.trim() !== ''
+              ? entry.userImage
+              : `https://ui-avatars.com/api/?name=${encodeURIComponent(entry.userName)}&background=random`
           }
-          alt={user?.userName}
+          alt={entry.userName}
         />
         <span className="ml-3 text-sm font-medium text-gray-800">
-          {user?.userName}
+          {entry.userName}
         </span>
       </div>
 

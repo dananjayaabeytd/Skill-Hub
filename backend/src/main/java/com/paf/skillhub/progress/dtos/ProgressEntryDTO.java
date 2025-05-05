@@ -13,5 +13,8 @@ public class ProgressEntryDTO {
     private ProgressTemplateType templateType;
     private Long planId;
     private Long userId;
+    private String userName;
+    private String userImage;
+
 
 }
