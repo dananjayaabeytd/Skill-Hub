@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { Card, Badge, TextInput } from 'flowbite-react';
-import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { HiSearch } from 'react-icons/hi';
+import {
+  format,
+  isToday,
+  isYesterday,
+  differenceInCalendarDays,
+  formatDistanceToNow
+} from 'date-fns';
+
+const getPostTimeLabel = (dateStr) => {
+  const postDate = new Date(dateStr);
+  if (isToday(postDate)) return 'Posted today';
+  if (isYesterday(postDate)) return 'Posted yesterday';
+
+  const daysAgo = differenceInCalendarDays(new Date(), postDate);
+  return `Posted ${daysAgo} days ago`;
+};
 
 const AllProgressPosts = () => {
   const [entries, setEntries] = useState([]);
@@ -133,69 +148,71 @@ const AllProgressPosts = () => {
                   initial="hidden"
                   animate="visible"
                 >
-                <Card className="border border-gray-200 hover:shadow-lg transition-shadow duration-300 rounded-2xl p-6 bg-white h-full">
-                  <div className="flex flex-col gap-3 h-full justify-between">
-                    
-                    {/* User Info */}
-                    <div className="flex items-center mb-2">
-                      <img
-                        src={
-                          entry.userImage && entry.userImage.trim() !== ''
-                            ? entry.userImage
-                            : `https://ui-avatars.com/api/?name=${encodeURIComponent(entry.userName)}&background=random&size=64&bold=true`
-                        }
-                        alt={entry.userName}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                      <span className="ml-2 text-sm font-medium text-gray-800">
-                        {entry.userName}
-                      </span>
+                  <Card className="border border-gray-200 hover:shadow-lg transition-shadow duration-300 rounded-2xl p-6 bg-white h-full">
+                    <div className="flex flex-col gap-3 h-full justify-between">
+                      {/* User Info */}
+                      <div className="flex items-center mb-2">
+                        <img
+                          src={
+                            entry.userImage && entry.userImage.trim() !== ''
+                              ? entry.userImage
+                              : `https://ui-avatars.com/api/?name=${encodeURIComponent(entry.userName)}&background=random&size=64&bold=true`
+                          }
+                          alt={entry.userName}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                        <div className="ml-2">
+                          <p className="text-sm font-medium text-gray-800">{entry.userName}</p>
+                          <p className="text-xs text-gray-500">
+                            {getPostTimeLabel(entry.date)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Media */}
+                      {entry.mediaUrls?.length > 0 && (
+                        <img
+                          src={entry.mediaUrls[0]}
+                          alt="Progress"
+                          className="w-full h-48 object-cover rounded-lg mb-3"
+                        />
+                      )}
+
+                      {/* Title & Description */}
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-800">{entry.title}</h3>
+                        <p className="text-gray-700 text-sm mt-1">{entry.description}</p>
+                      </div>
+
+                      {/* Badges */}
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        <Badge color="blue">{entry.templateType}</Badge>
+                        <Badge color="gray">
+                          {format(new Date(entry.date), 'PPP')}
+                        </Badge>
+                      </div>
+
+                      {/* Footer info */}
+                      <div className="text-sm text-gray-500 mt-4">
+                        View followed plan:{' '}
+                        <span
+                          className="text-blue-600 underline cursor-pointer hover:text-blue-800"
+                          onClick={() =>
+                            (window.location.href = `/plans/view/${entry.planId}`)
+                          }
+                        >
+                          #{entry.planId}
+                        </span>{' '}
+                        | User ID: {entry.userId}
+                      </div>
                     </div>
-
-                    {/* Optional media thumbnail */}
-                    {entry.mediaUrls?.length > 0 && (
-                      <img
-                        src={entry.mediaUrls[0]}
-                        alt="Progress"
-                        className="w-full h-48 object-cover rounded-lg mb-3"
-                      />
-                    )}
-
-                    {/* Title & Description */}
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-800">{entry.title}</h3>
-                      <p className="text-gray-700 text-sm mt-1">{entry.description}</p>
-                    </div>
-
-                    {/* Badges */}
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      <Badge color="blue">{entry.templateType}</Badge>
-                      <Badge color="gray">{format(new Date(entry.date), 'PPP')}</Badge>
-                    </div>
-
-                    {/* Footer info */}
-                    <div className="text-sm text-gray-500 mt-4">
-                      View followed plan:{' '}
-                      <span
-                        className="text-blue-600 underline cursor-pointer hover:text-blue-800"
-                        onClick={() =>
-                          (window.location.href = `/plans/view/${entry.planId}`)
-                        }
-                      >
-                        #{entry.planId}
-                      </span>{' '}
-                      | User ID: {entry.userId}
-                    </div>
-                  </div>
-                </Card>
-
-
+                  </Card>
                 </motion.div>
               ))}
             </motion.div>
           ))}
 
-          {/* Pagination controls */}
+          {/* Pagination */}
           <div className="flex justify-center mt-8 gap-4">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -219,5 +236,6 @@ const AllProgressPosts = () => {
 };
 
 export default AllProgressPosts;
+
 
 

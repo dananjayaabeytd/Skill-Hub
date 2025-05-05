@@ -1,26 +1,37 @@
 import React from 'react';
 import { Badge, Avatar } from 'flowbite-react';
-import { format } from 'date-fns';
+import { format, isToday, isYesterday, differenceInCalendarDays } from 'date-fns';
 import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
 
-const ProgressCard = ({ entry, isOwner, onEdit, onDelete }) => {
+const getPostTimeLabel = (dateStr) => {
+  const postDate = new Date(dateStr);
+
+  if (isToday(postDate)) return 'Posted today';
+  if (isYesterday(postDate)) return 'Posted yesterday';
+
+  const diff = differenceInCalendarDays(new Date(), postDate);
+  return `Posted ${diff} days ago`;
+};
+
+const ProgressCard = ({ entry, user, isOwner, onEdit, onDelete }) => {
   return (
-    <div className="border border-gray-300 p-4 bg-white shadow-sm hover:shadow-md transition">
+    <div className="border border-gray-300 p-4 bg-white shadow-sm hover:shadow-md transition rounded-lg">
       {/* User Info */}
       <div className="flex items-center mb-3">
         <Avatar
           size="sm"
           rounded
           img={
-            entry.userImage && entry.userImage.trim() !== ''
-              ? entry.userImage
-              : `https://ui-avatars.com/api/?name=${encodeURIComponent(entry.userName)}&background=random`
+            user?.userImage && user.userImage.trim() !== ''
+              ? user.userImage
+              : `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.userName)}&background=random`
           }
-          alt={entry.userName}
+          alt={user?.userName}
         />
-        <span className="ml-3 text-sm font-medium text-gray-800">
-          {entry.userName}
-        </span>
+        <div className="ml-3">
+          <p className="text-sm font-medium text-gray-800">{user?.userName}</p>
+          <p className="text-xs text-gray-500">{getPostTimeLabel(entry.date)}</p>
+        </div>
       </div>
 
       {/* Entry Content */}
@@ -29,7 +40,7 @@ const ProgressCard = ({ entry, isOwner, onEdit, onDelete }) => {
 
       <div className="flex flex-wrap gap-2 text-sm mb-3">
         <Badge color="info">{entry.templateType}</Badge>
-        <Badge color="gray">{format(new Date(entry.date), 'yyyy-MM-dd')}</Badge>
+        <Badge color="gray">{getPostTimeLabel(entry.date)}</Badge>
       </div>
 
       <p className="text-xs text-gray-500">
@@ -59,3 +70,4 @@ const ProgressCard = ({ entry, isOwner, onEdit, onDelete }) => {
 };
 
 export default ProgressCard;
+
