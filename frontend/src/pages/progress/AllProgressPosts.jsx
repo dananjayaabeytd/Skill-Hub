@@ -10,12 +10,12 @@ import {
   differenceInCalendarDays
 } from 'date-fns';
 
-// Template image mapping
-const imageMap = {
-  CERTIFICATE: '/images/certificate-template.jpg',
-  MILESTONE: '/images/milestone-template.jpg',
-  PROJECT: '/images/progress-templates/project1.jpg',
-  WORKSHOP: '/images/progress-templates/workshop1.jpg',
+const extractHashtags = (text) => {
+  return (text.match(/#[\w]+/g) || []).slice(0, 5); // limit to first 5 hashtags
+};
+
+const removeHashtags = (text) => {
+  return text.replace(/#[\w]+/g, '').trim();
 };
 
 const getPostTimeLabel = (dateStr) => {
@@ -93,7 +93,7 @@ const AllProgressPosts = () => {
 
       {/* Filter buttons */}
       <div className="flex flex-wrap justify-center gap-4 mb-6">
-        {['All', 'CERTIFICATE', 'MILESTONE', 'PROJECT', 'WORKSHOP'].map((type) => (
+        {['All', 'CERTIFICATE', 'MILESTONE', 'SKILL', 'DAILY_LOG'].map((type) => (
           <button
             key={type}
             onClick={() => {
@@ -114,6 +114,7 @@ const AllProgressPosts = () => {
       {/* Search bar */}
       <div className="mb-10 flex justify-center">
         <div className="relative w-full max-w-md">
+          <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
           <TextInput
             placeholder="Search by title or description..."
             value={searchTerm}
@@ -121,11 +122,11 @@ const AllProgressPosts = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="pl-10 rounded-lg shadow-md"
-            icon={HiSearch}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-md"
           />
         </div>
       </div>
+
 
       {filteredEntries.length === 0 ? (
         <motion.div
@@ -175,6 +176,16 @@ const AllProgressPosts = () => {
                         </div>
                       </div>
 
+
+
+                      {/* Title & Description */}
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-800">{entry.title}</h3>
+                        <p className="text-gray-700 text-sm mt-1">
+                          {removeHashtags(entry.description)}
+                        </p>
+                      </div>
+
                       {/* Template image (no mediaUrls) */}
                       {entry.mediaUrls?.length > 0 && (
                         <img
@@ -184,12 +195,18 @@ const AllProgressPosts = () => {
                         />
                       )}
 
+                      {extractHashtags(entry.description).length > 0 && (
+                        <div className="text-sm text-blue-600 font-medium mb-2">
+                          {chunkArray(extractHashtags(entry.description), 4).map((group, groupIndex) => (
+                            <div key={groupIndex} className="flex flex-wrap mb-1">
+                              {group.map((tag, i) => (
+                                <span key={i} className="mr-2">{tag}</span>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
-                      {/* Title & Description */}
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-800">{entry.title}</h3>
-                        <p className="text-gray-700 text-sm mt-1">{entry.description}</p>
-                      </div>
 
                       {/* Badges */}
                       <div className="flex flex-wrap gap-2 mt-4">
