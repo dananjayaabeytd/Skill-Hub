@@ -8,10 +8,10 @@ import DailyLogForm from './DailyLogForm';
 import { motion } from 'framer-motion';
 
 const templates = [
-  { id: 'CERTIFICATE', title: 'Certificate Achievement', image: '/images/certificate-template.jpg' },
-  { id: 'SKILL', title: 'Skill Milestone', image: '/images/skill-template.jpg' },
-  { id: 'MILESTONE', title: 'Milestone Achievement', image: '/images/milestone-template.jpg' },
-  { id: 'DAILY_LOG', title: 'Daily Log Entry', image: '/images/dailylog-template.jpg' },
+  { id: 'CERTIFICATE', title: 'Certificate Achievement', image: '/images/certificate-template.png' },
+  { id: 'MILESTONE', title: 'Milestone Achievement', image: '/images/image12.png' },
+  { id: 'DAILY_LOG', title: 'Daily Log Entry', image: '/images/image11.png' },
+  { id: 'SKILL', title: 'Skill Milestone', image: '/images/custom-template.png' },
 ];
 
 const TemplateSelectionPage = () => {
