@@ -49,6 +49,7 @@ public class ProgressServiceImpl implements ProgressService {
         entry.setDescription(updated.getDescription());
         entry.setDate(updated.getDate());
         entry.setTemplateType(updated.getTemplateType());
+        entry.setMediaUrls(updated.getMediaUrls());
         return progressRepository.save(entry);
     }
 

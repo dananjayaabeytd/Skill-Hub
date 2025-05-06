@@ -4,6 +4,15 @@ import { Card, Label, TextInput, Textarea, Select, Button, Spinner } from 'flowb
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 
+const predefinedImages = [
+  '/images/image1.png',
+  '/images/image2.png',
+  '/images/image3.png',
+  '/images/image4.png',
+  '/images/image5.png',
+  '/images/image6.png',
+];
+
 const EditProgressEntry = () => {
   const { entryId } = useParams();
   const navigate = useNavigate();
@@ -12,12 +21,13 @@ const EditProgressEntry = () => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [templateType, setTemplateType] = useState('CERTIFICATE');
+  const [mediaUrl, setMediaUrl] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEntry = async () => {
       try {
-        const res = await api.get(`/progress/me`); // no single-entry endpoint
+        const res = await api.get(`/progress/me`);
         const match = res.data.find((entry) => entry.id.toString() === entryId);
         if (!match) throw new Error('Progress entry not found');
 
@@ -25,6 +35,7 @@ const EditProgressEntry = () => {
         setDescription(match.description);
         setDate(match.date);
         setTemplateType(match.templateType);
+        setMediaUrl(match.mediaUrls?.[0] || '');
       } catch (err) {
         console.error(err);
         toast.error('Failed to load progress entry.');
@@ -43,6 +54,7 @@ const EditProgressEntry = () => {
         description,
         date,
         templateType,
+        mediaUrls: mediaUrl ? [mediaUrl] : [],
       });
       toast.success('Progress updated!');
       navigate(-1); // go back to previous page
@@ -86,6 +98,31 @@ const EditProgressEntry = () => {
               <option value="DAILY_LOG">Daily Log</option>
             </Select>
           </div>
+
+          <div>
+            <Label value="Choose a display image" />
+            <div className="flex flex-wrap gap-4">
+              {predefinedImages.map((img) => (
+                <img
+                  key={img}
+                  src={img}
+                  alt="template"
+                  onClick={() => setMediaUrl(img)}
+                  className={`w-40 h-28 object-cover rounded-lg cursor-pointer border-4 ${
+                    mediaUrl === img ? 'border-blue-500' : 'border-transparent'
+                  }`}
+                />
+              ))}
+            </div>
+            {mediaUrl && (
+              <img
+                src={mediaUrl}
+                alt="Selected"
+                className="mt-4 h-40 object-cover rounded-lg"
+              />
+            )}
+          </div>
+
           <Button type="submit" gradientDuoTone="purpleToBlue">Save Changes</Button>
         </form>
       </Card>
@@ -94,3 +131,4 @@ const EditProgressEntry = () => {
 };
 
 export default EditProgressEntry;
+
