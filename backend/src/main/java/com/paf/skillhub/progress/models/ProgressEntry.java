@@ -38,4 +38,7 @@ public class ProgressEntry {
 
     @ElementCollection
     private List<String> mediaUrls = new ArrayList<>();
+
+    @Column(columnDefinition = "TEXT")
+    private String resource;    
 }

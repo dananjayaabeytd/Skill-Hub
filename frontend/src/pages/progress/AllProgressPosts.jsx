@@ -10,6 +10,12 @@ import {
   differenceInCalendarDays
 } from 'date-fns';
 
+const splitResources = (resourceStr) => {
+  if (!resourceStr) return [];
+  return resourceStr.trim().split(/\s+/); // split by whitespace
+};
+
+
 const extractHashtags = (text) => {
   return (text.match(/#[\w]+/g) || []).slice(0, 5); // limit to first 5 hashtags
 };
@@ -194,6 +200,24 @@ const AllProgressPosts = () => {
                           className="w-full h-48 object-cover rounded-lg mb-3"
                         />
                       )}
+
+                      {splitResources(entry.resource).length > 0 && (
+                        <div className="space-y-1">
+                          <p className="text-sm font-semibold text-gray-700">Resources:</p>
+                          {splitResources(entry.resource).map((link, idx) => (
+                            <a
+                              key={idx}
+                              href={link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block text-sm text-blue-600 hover:underline truncate"
+                            >
+                              🔗 {link}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+
 
                       {extractHashtags(entry.description).length > 0 && (
                         <div className="text-sm text-blue-600 font-medium mb-2">

@@ -31,6 +31,7 @@ const ProgressForm = ({
   const [date, setDate] = useState('');
   const [template, setTemplate] = useState(defaultTemplate || 'CERTIFICATE');
   const [mediaUrl, setMediaUrl] = useState('');
+  const [resource, setResource] = useState('');
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
@@ -48,6 +49,10 @@ const ProgressForm = ({
     if (!description.trim()) newErrors.description = 'Description is required.';
     if (!date) newErrors.date = 'Date is required.';
     if (!mediaUrl) newErrors.mediaUrl = 'Please select a display image.';
+    if (resource && !/^https?:\/\//.test(resource)) {
+      newErrors.resource = 'Resource URL must start with http:// or https://';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -55,7 +60,7 @@ const ProgressForm = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
-      toast.error('Please fill all required fields correctly.');
+      toast.error('Please fix validation errors.');
       return;
     }
 
@@ -69,6 +74,7 @@ const ProgressForm = ({
           date,
           templateType: template,
           mediaUrls: mediaUrl ? [mediaUrl] : [],
+          resource: resource.trim() || null,
         },
         {
           headers: {
@@ -89,37 +95,34 @@ const ProgressForm = ({
     <form onSubmit={handleSubmit} className="space-y-6 mt-6">
       <div>
         <Label htmlFor="title" value="Title" />
-        <TextInput
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <TextInput id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
         {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
       </div>
 
       <div>
         <Label htmlFor="description" value="Description" />
-        <Textarea
-          id="description"
-          rows={4}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <Textarea id="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
         {errors.description && <p className="text-red-600 text-sm mt-1">{errors.description}</p>}
       </div>
 
       <div>
         <Label htmlFor="date" value="Date" />
-        <TextInput
-          type="date"
-          id="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
+        <TextInput type="date" id="date" value={date} onChange={(e) => setDate(e.target.value)} />
         {errors.date && <p className="text-red-600 text-sm mt-1">{errors.date}</p>}
       </div>
 
-      {/* Template Image Selection */}
+      <div>
+        <Label htmlFor="resource" value="Resource (Optional)" />
+        <TextInput
+          id="resource"
+          type="url"
+          placeholder="https://example.com"
+          value={resource}
+          onChange={(e) => setResource(e.target.value)}
+        />
+        {errors.resource && <p className="text-red-600 text-sm mt-1">{errors.resource}</p>}
+      </div>
+
       <div className="space-y-2">
         <Label value="Choose a display image" />
         <div className="flex flex-wrap gap-4">
@@ -137,11 +140,7 @@ const ProgressForm = ({
         </div>
         {errors.mediaUrl && <p className="text-red-600 text-sm mt-1">{errors.mediaUrl}</p>}
         {mediaUrl && (
-          <img
-            src={mediaUrl}
-            alt="Selected"
-            className="mt-4 h-40 object-cover rounded-lg"
-          />
+          <img src={mediaUrl} alt="Selected" className="mt-4 h-40 object-cover rounded-lg" />
         )}
       </div>
 

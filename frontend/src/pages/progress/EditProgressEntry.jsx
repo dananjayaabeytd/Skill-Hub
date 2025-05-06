@@ -30,6 +30,8 @@ const EditProgressEntry = () => {
   const [mediaUrl, setMediaUrl] = useState('');
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
+  const [resource, setResource] = useState('');
+
 
   useEffect(() => {
     const fetchEntry = async () => {
@@ -42,6 +44,7 @@ const EditProgressEntry = () => {
         setDescription(match.description);
         setDate(match.date);
         setTemplateType(match.templateType);
+        setResource(match.resource || '');
         setMediaUrl(match.mediaUrls?.[0] || '');
       } catch (err) {
         console.error(err);
@@ -75,6 +78,7 @@ const EditProgressEntry = () => {
         date,
         templateType,
         mediaUrls: mediaUrl ? [mediaUrl] : [],
+        resource,
       });
       toast.success('Progress updated!');
       navigate(-1);
@@ -126,6 +130,17 @@ const EditProgressEntry = () => {
                 <option value="DAILY_LOG">Daily Log</option>
               </Select>
               {errors.templateType && <p className="text-red-600 text-sm mt-1">{errors.templateType}</p>}
+            </div>
+
+            <div>
+              <Label htmlFor="resource" value="Resource (optional)" />
+              <TextInput
+                id="resource"
+                type="url"
+                placeholder="https://example.com"
+                value={resource}
+                onChange={(e) => setResource(e.target.value)}
+              />
             </div>
 
             <div>

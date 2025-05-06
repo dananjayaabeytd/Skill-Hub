@@ -17,6 +17,9 @@ public class ProgressEntryDTO {
     private String userName;
     private String userImage;
     private List<String> mediaUrls;
+    private String resource;
+
+
 
 
 

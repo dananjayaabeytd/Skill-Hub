@@ -2,7 +2,6 @@ package com.paf.skillhub.progress.mappers;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-
 import com.paf.skillhub.progress.dtos.ProgressEntryDTO;
 import com.paf.skillhub.progress.models.ProgressEntry;
 
@@ -28,7 +27,18 @@ public class ProgressEntryMapper {
         dto.setUserImage(fallbackAvatar);
         
         dto.setMediaUrls(entry.getMediaUrls());
-        
+        dto.setResource(entry.getResource());
+
         return dto;
     }
+
+    public static void mapToEntity(ProgressEntry entry, ProgressEntryDTO dto) {
+        entry.setTitle(dto.getTitle());
+        entry.setDescription(dto.getDescription());
+        entry.setDate(dto.getDate());
+        entry.setTemplateType(dto.getTemplateType());
+        entry.setMediaUrls(dto.getMediaUrls());
+        entry.setResource(dto.getResource());  // ✅ Set resource string
+    }
+
 }
