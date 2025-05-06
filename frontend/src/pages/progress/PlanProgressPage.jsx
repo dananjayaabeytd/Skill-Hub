@@ -25,7 +25,7 @@ const PlanProgressPage = () => {
   const [animatedPercent, setAnimatedPercent] = useState(0);
   const [showSidebar, setShowSidebar] = useState(false);
   const navigate = useNavigate();
-  const MAX_ENTRIES = 20;
+  const MAX_ENTRIES = 15;
 
   const fetchEntries = async () => {
     try {
@@ -40,7 +40,6 @@ const PlanProgressPage = () => {
     fetchEntries();
   }, [planId]);
 
-  // Animate % bar
   useEffect(() => {
     const percent = Math.min((entries.length / MAX_ENTRIES) * 100, 100);
     let current = 0;
@@ -57,7 +56,6 @@ const PlanProgressPage = () => {
     return () => clearInterval(interval);
   }, [entries]);
 
-  // Pie chart data
   const pieData = Object.values(
     entries.reduce((acc, entry) => {
       acc[entry.templateType] = acc[entry.templateType] || { name: entry.templateType, value: 0 };
@@ -69,42 +67,56 @@ const PlanProgressPage = () => {
   return (
     <div className="relative max-w mx-auto py-10 px-4 flex gap-6 bg-[#f9fafb] min-h-screen">
 
-      {/* Main Content */}
-      <div className="flex-1">
-        <div className="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-          <div className="flex flex-col md:flex-row md:items-center gap-2">
-            <h2 className="text-2xl font-bold text-gray-800">Your Progress</h2>
-            <span
-              className="text-blue-600 underline cursor-pointer hover:text-blue-800 text-sm"
-              onClick={() => navigate(`/plans/view/${planId}`)}
-            >
-              Check the plan
-            </span>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              onClick={() => setShowSidebar((prev) => !prev)}
-              color="gray"
-            >
-              {showSidebar ? 'Hide Insights' : 'Show Insights'}
-            </Button>
-            <Button
-              onClick={() => navigate(`/progress/start/${planId}/select-template`)}
-                gradientDuoTone="purpleToBlue"
-              >
-                + Add Progress
-              </Button>
+      {/* Title Section */}
+      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 text-center">
+        <h2 className="text-4xl font-extrabold text-gray-800">
+          Your Progress on{' '}
+          <span
+            className="text-blue-600 underline cursor-pointer hover:text-blue-800"
+            onClick={() => navigate(`/plans/view/${planId}`)}
+          >
+            Plan!
+          </span>
+        </h2>
+      </div>
 
-          </div>
+      {/* Main Content */}
+      <div className="flex-1 pt-24">
+        <div className="mb-6 flex justify-center gap-2">
+          <Button onClick={() => setShowSidebar((prev) => !prev)} color="gray">
+            {showSidebar ? 'Hide Insights' : 'Show Insights'}
+          </Button>
+          <Button
+            onClick={() => navigate(`/progress/start/${planId}/select-template`)}
+            gradientDuoTone="purpleToBlue"
+          >
+            + Add Progress
+          </Button>
         </div>
 
+
         {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-10 mb-6 shadow-inner">
-          <div
-            className="bg-gradient-to-r from-purple-500 to-blue-500 h-10 rounded-full text-white text-sm font-semibold flex items-center justify-center transition-all duration-500"
-            style={{ width: `${animatedPercent}%` }}
-          >
-            {animatedPercent}%
+        <div className="mb-10 flex justify-center">
+          <div className="w-full max-w-5xl px-6">
+            <div className="bg-gray-200 rounded-full h-14 overflow-hidden shadow-inner">
+              <div
+                className="bg-gradient-to-r from-purple-500 to-blue-500 h-14 transition-all duration-500 rounded-full flex items-center justify-center text-white font-bold text-lg"
+                style={{ width: `${animatedPercent}%` }}
+              >
+                {animatedPercent}%
+              </div>
+            </div>
+            <div className="mt-4 text-center text-xl font-semibold">
+              {animatedPercent < 100 ? (
+                <span className="text-gray-800">
+                  You're {animatedPercent}% there, keep it up!
+                </span>
+              ) : (
+                <span className="text-green-600">
+                  🎉 Congratulations! Your plan is completed!
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -130,12 +142,11 @@ const PlanProgressPage = () => {
             </div>
           ))}
         </div>
-
       </div>
 
       {/* Insights Sidebar */}
       {showSidebar && entries.length > 0 && (
-        <div className="w-full lg:w-[350px] xl:w-[400px] bg-white border rounded-lg p-4 shadow-sm sticky top-10 h-fit hidden lg:block">
+        <div className="w-full lg:w-[350px] xl:w-[400px] bg-white border rounded-lg p-4 shadow-sm sticky top-10 h-fit hidden lg:block overflow-y-auto max-h-[85vh]">
           <h4 className="text-lg font-semibold mb-4 text-center">Progress Insights</h4>
 
           {/* Line Chart */}
@@ -154,7 +165,7 @@ const PlanProgressPage = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* NEW Bar Chart */}
+          {/* Bar Chart */}
           <div className="mb-6">
             <p className="text-sm font-medium mb-2">Progress Percentage Over Time</p>
             <ResponsiveContainer width="100%" height={200}>
@@ -199,6 +210,18 @@ const PlanProgressPage = () => {
               </PieChart>
             </ResponsiveContainer>
           </div>
+
+          <div className="mt-6 text-center">
+            <Button
+              onClick={() => navigate('/payment')}
+              gradientDuoTone="purpleToBlue"
+              className="w-full"
+            >
+              Download Insights
+            </Button>
+          </div>
+
+
         </div>
       )}
     </div>
