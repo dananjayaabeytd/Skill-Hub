@@ -31,6 +31,7 @@ const ProgressForm = ({
   const [date, setDate] = useState('');
   const [template, setTemplate] = useState(defaultTemplate || 'CERTIFICATE');
   const [mediaUrl, setMediaUrl] = useState('');
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,12 +42,22 @@ const ProgressForm = ({
     setDate(today.toISOString().split('T')[0]);
   }, [defaultTemplate, defaultTitle, defaultDescription]);
 
+  const validate = () => {
+    const newErrors = {};
+    if (!title.trim()) newErrors.title = 'Title is required.';
+    if (!description.trim()) newErrors.description = 'Description is required.';
+    if (!date) newErrors.date = 'Date is required.';
+    if (!mediaUrl) newErrors.mediaUrl = 'Please select a display image.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!title.trim()) return toast.error('Title cannot be empty!');
-    if (!description.trim()) return toast.error('Description cannot be empty!');
-    if (!date) return toast.error('Date is required!');
+    if (!validate()) {
+      toast.error('Please fill all required fields correctly.');
+      return;
+    }
 
     try {
       const token = localStorage.getItem('JWT_TOKEN');
@@ -82,8 +93,8 @@ const ProgressForm = ({
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          required
         />
+        {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
       </div>
 
       <div>
@@ -93,8 +104,8 @@ const ProgressForm = ({
           rows={4}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          required
         />
+        {errors.description && <p className="text-red-600 text-sm mt-1">{errors.description}</p>}
       </div>
 
       <div>
@@ -104,11 +115,11 @@ const ProgressForm = ({
           id="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          required
         />
+        {errors.date && <p className="text-red-600 text-sm mt-1">{errors.date}</p>}
       </div>
 
-      {/* Template Image Selection (independent of template type) */}
+      {/* Template Image Selection */}
       <div className="space-y-2">
         <Label value="Choose a display image" />
         <div className="flex flex-wrap gap-4">
@@ -124,6 +135,7 @@ const ProgressForm = ({
             />
           ))}
         </div>
+        {errors.mediaUrl && <p className="text-red-600 text-sm mt-1">{errors.mediaUrl}</p>}
         {mediaUrl && (
           <img
             src={mediaUrl}
