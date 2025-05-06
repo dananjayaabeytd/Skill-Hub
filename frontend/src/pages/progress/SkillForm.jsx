@@ -2,15 +2,18 @@ import React from 'react';
 import ProgressForm from './ProgressForm';
 
 const SkillForm = ({ planId, onSuccess }) => (
-  <ProgressForm
-    planId={planId}
-    defaultTemplate="SKILL"
-    defaultTitle="New Skill Unlocked! 🔓"
-    defaultDescription={`Just learned something new and I’m excited to apply it! 🎯
+  <>
+    <h2>Customize Your Template!</h2>
+    <ProgressForm
+      planId={planId}
+      defaultTemplate="SKILL"
+      defaultTitle="New Skill Unlocked! 🔓"
+      defaultDescription={`Customize your new skill entry below to highlight what you've learned and how you plan to apply it. 🚀
 
 #SkillUnlocked #KeepGrowing #ProgressJourney #SkillHub`}
-    onSuccess={onSuccess}
-  />
+      onSuccess={onSuccess}
+    />
+  </>
 );
 
 export default SkillForm;
