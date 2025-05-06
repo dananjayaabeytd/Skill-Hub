@@ -7,15 +7,21 @@ import {
   format,
   isToday,
   isYesterday,
-  differenceInCalendarDays,
-  formatDistanceToNow
+  differenceInCalendarDays
 } from 'date-fns';
+
+// Template image mapping
+const imageMap = {
+  CERTIFICATE: '/images/certificate-template.jpg',
+  MILESTONE: '/images/milestone-template.jpg',
+  PROJECT: '/images/progress-templates/project1.jpg',
+  WORKSHOP: '/images/progress-templates/workshop1.jpg',
+};
 
 const getPostTimeLabel = (dateStr) => {
   const postDate = new Date(dateStr);
   if (isToday(postDate)) return 'Posted today';
   if (isYesterday(postDate)) return 'Posted yesterday';
-
   const daysAgo = differenceInCalendarDays(new Date(), postDate);
   return `Posted ${daysAgo} days ago`;
 };
@@ -87,7 +93,7 @@ const AllProgressPosts = () => {
 
       {/* Filter buttons */}
       <div className="flex flex-wrap justify-center gap-4 mb-6">
-        {['All', 'CERTIFICATE', 'MILESTONE', 'DAILY_LOG'].map((type) => (
+        {['All', 'CERTIFICATE', 'MILESTONE', 'PROJECT', 'WORKSHOP'].map((type) => (
           <button
             key={type}
             onClick={() => {
@@ -154,7 +160,7 @@ const AllProgressPosts = () => {
                       <div className="flex items-center mb-2">
                         <img
                           src={
-                            entry.userImage && entry.userImage.trim() !== ''
+                            entry.userImage?.trim()
                               ? entry.userImage
                               : `https://ui-avatars.com/api/?name=${encodeURIComponent(entry.userName)}&background=random&size=64&bold=true`
                           }
@@ -169,7 +175,7 @@ const AllProgressPosts = () => {
                         </div>
                       </div>
 
-                      {/* Media */}
+                      {/* Template image (no mediaUrls) */}
                       {entry.mediaUrls?.length > 0 && (
                         <img
                           src={entry.mediaUrls[0]}
@@ -177,6 +183,7 @@ const AllProgressPosts = () => {
                           className="w-full h-48 object-cover rounded-lg mb-3"
                         />
                       )}
+
 
                       {/* Title & Description */}
                       <div>
@@ -236,6 +243,7 @@ const AllProgressPosts = () => {
 };
 
 export default AllProgressPosts;
+
 
 
 

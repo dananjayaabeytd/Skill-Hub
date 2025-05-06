@@ -3,6 +3,7 @@ package com.paf.skillhub.progress.dtos;
 import com.paf.skillhub.progress.models.ProgressTemplateType;
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class ProgressEntryDTO {
@@ -15,6 +16,8 @@ public class ProgressEntryDTO {
     private Long userId;
     private String userName;
     private String userImage;
+    private List<String> mediaUrls;
+
 
 
 }

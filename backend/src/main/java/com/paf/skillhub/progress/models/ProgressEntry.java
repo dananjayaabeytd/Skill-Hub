@@ -6,6 +6,8 @@ import com.paf.skillhub.learningplan.models.LearningPlan;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -33,4 +35,7 @@ public class ProgressEntry {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
+
+    @ElementCollection
+    private List<String> mediaUrls = new ArrayList<>();
 }

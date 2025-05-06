@@ -26,6 +26,9 @@ public class ProgressEntryMapper {
                 URLEncoder.encode(userName, StandardCharsets.UTF_8) +
                 "&background=random&size=128&bold=true";
         dto.setUserImage(fallbackAvatar);
+        
+        dto.setMediaUrls(entry.getMediaUrls());
+        
         return dto;
     }
 }

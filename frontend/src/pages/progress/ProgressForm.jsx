@@ -4,42 +4,43 @@ import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 
-const ProgressForm = ({ planId, defaultTemplate, defaultTitle = '', defaultDescription = '', onSuccess }) => {
+const predefinedImages = [
+  '/images/image1.png',
+  '/images/image2.png',
+  '/images/image3.png',
+  '/images/image4.png',
+  '/images/image5.png',
+  '/images/image6.png',
+];
+
+const ProgressForm = ({
+  planId,
+  defaultTemplate,
+  defaultTitle = '',
+  defaultDescription = '',
+  onSuccess,
+}) => {
   const [title, setTitle] = useState(defaultTitle);
   const [description, setDescription] = useState(defaultDescription);
   const [date, setDate] = useState('');
   const [template, setTemplate] = useState(defaultTemplate || 'CERTIFICATE');
+  const [mediaUrl, setMediaUrl] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (defaultTemplate) {
-      setTemplate(defaultTemplate);
-    }
+    if (defaultTemplate) setTemplate(defaultTemplate);
     setTitle(defaultTitle);
     setDescription(defaultDescription);
-
-    // Set today's date automatically
     const today = new Date();
-    const formattedToday = today.toISOString().split('T')[0];
-    setDate(formattedToday);
+    setDate(today.toISOString().split('T')[0]);
   }, [defaultTemplate, defaultTitle, defaultDescription]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
-    if (!title.trim()) {
-      toast.error('Title cannot be empty!');
-      return;
-    }
-    if (!description.trim()) {
-      toast.error('Description cannot be empty!');
-      return;
-    }
-    if (!date) {
-      toast.error('Date is required!');
-      return;
-    }
+    if (!title.trim()) return toast.error('Title cannot be empty!');
+    if (!description.trim()) return toast.error('Description cannot be empty!');
+    if (!date) return toast.error('Date is required!');
 
     try {
       const token = localStorage.getItem('JWT_TOKEN');
@@ -50,6 +51,7 @@ const ProgressForm = ({ planId, defaultTemplate, defaultTitle = '', defaultDescr
           description,
           date,
           templateType: template,
+          mediaUrls: mediaUrl ? [mediaUrl] : [],
         },
         {
           headers: {
@@ -58,9 +60,7 @@ const ProgressForm = ({ planId, defaultTemplate, defaultTitle = '', defaultDescr
         }
       );
       toast.success('Your progress is uploaded successfully!');
-      if (onSuccess) {
-        onSuccess();
-      }
+      if (onSuccess) onSuccess();
       navigate('/progress/all');
     } catch (err) {
       console.error('Error creating progress entry:', err);
@@ -79,6 +79,7 @@ const ProgressForm = ({ planId, defaultTemplate, defaultTitle = '', defaultDescr
           required
         />
       </div>
+
       <div>
         <Label htmlFor="description" value="Description" />
         <Textarea
@@ -89,6 +90,7 @@ const ProgressForm = ({ planId, defaultTemplate, defaultTitle = '', defaultDescr
           required
         />
       </div>
+
       <div>
         <Label htmlFor="date" value="Date" />
         <TextInput
@@ -100,6 +102,31 @@ const ProgressForm = ({ planId, defaultTemplate, defaultTitle = '', defaultDescr
         />
       </div>
 
+      {/* Template Image Selection (independent of template type) */}
+      <div className="space-y-2">
+        <Label value="Choose a display image" />
+        <div className="flex flex-wrap gap-4">
+          {predefinedImages.map((img) => (
+            <img
+              key={img}
+              src={img}
+              alt="template"
+              onClick={() => setMediaUrl(img)}
+              className={`w-40 h-28 object-cover rounded-lg cursor-pointer border-4 ${
+                mediaUrl === img ? 'border-blue-500' : 'border-transparent'
+              }`}
+            />
+          ))}
+        </div>
+        {mediaUrl && (
+          <img
+            src={mediaUrl}
+            alt="Selected"
+            className="mt-4 h-40 object-cover rounded-lg"
+          />
+        )}
+      </div>
+
       <Button type="submit" gradientDuoTone="purpleToBlue">
         Upload Progress
       </Button>
@@ -108,5 +135,3 @@ const ProgressForm = ({ planId, defaultTemplate, defaultTitle = '', defaultDescr
 };
 
 export default ProgressForm;
-
-
