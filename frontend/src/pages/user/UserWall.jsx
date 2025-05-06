@@ -650,18 +650,12 @@ const UserWall = () => {
               </Tabs.Item>
               <Tabs.Item
                 active={activeTab === 'progress'}
-                title='Progress'
+                title='Progress Entry'
                 icon={HiOutlineChartBar}
               >
                 <div className="py-4">
                   <div className="flex flex-wrap gap-2 mb-4 items-center justify-between">
-                    <h3 className="text-xl font-semibold">My Progress</h3>
-                    <Button
-                      color="purple"
-                      onClick={() => navigate('/progress/start')}
-                    >
-                      + Add Progress
-                    </Button>
+                    <h3 className="text-xl font-semibold">My Progress Entries</h3>
                   </div>
 
                   {entries.length === 0 ? (
@@ -669,7 +663,6 @@ const UserWall = () => {
                       <HiOutlineDocumentText className="mx-auto h-12 w-12 text-gray-400" />
                       <p className="mt-2 text-gray-600 font-medium">You haven’t posted any progress yet</p>
                       <p className="text-sm text-gray-500 mb-4">Share your milestones and learning progress with the community</p>
-                      <Button color="purple" onClick={() => navigate('/progress/start')}>Post Progress</Button>
                     </div>
                   ) : (
                     <div className="space-y-6">
@@ -686,7 +679,7 @@ const UserWall = () => {
                               className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800"
                               onClick={() => navigate(`/progress/plan/${planId}`)}
                             >
-                              View Timeline →
+                              Track my progress on this plan →
                             </span>
                           </div>
                           <div className="grid gap-4">
