@@ -20,7 +20,7 @@ public class LearningPlanDTO {
     private LocalDateTime updatedAt;
 
     private Long userId;
-    private Long postId; // Optional field to link with a shared post
-
+    //private Long postId; // Optional field to link with a shared post
+    private Long skillId;//added skill
     private List<LearningItemDTO> items; // Detailed items
 }
