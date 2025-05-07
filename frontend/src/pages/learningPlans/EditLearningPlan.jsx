@@ -26,6 +26,8 @@ const EditLearningPlan = () => {
   const [expectedEndDate, setExpectedEndDate] = useState('');
   const [status, setStatus] = useState('NOT_STARTED');
   const [items, setItems] = useState([]);
+  const [skillId, setSkillId] = useState('');
+  const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,7 +35,8 @@ const EditLearningPlan = () => {
       try {
         const [planRes, itemsRes] = await Promise.all([
           api.get(`/learning-plans/${id}`),
-          api.get(`/learning-plans/${id}/items`)
+          api.get(`/learning-plans/${id}/items`),
+          api.get(`/skills`),
         ]);
 
         const plan = planRes.data;
@@ -42,6 +45,8 @@ const EditLearningPlan = () => {
         setExpectedStartDate(plan.expectedStartDate || '');
         setExpectedEndDate(plan.expectedEndDate || '');
         setStatus(plan.status || 'NOT_STARTED');
+        setSkillId(plan.skill?.skillId || '');
+        setSkills(skills.data || []);
 
         const fetchedItems = itemsRes.data || [];
         const cleaned = fetchedItems.map(item => ({
@@ -106,6 +111,7 @@ const EditLearningPlan = () => {
       expectedEndDate,
       expectedDurationDays: calculateDuration(),
       status,
+      skill: skillId ? { skillId: parseInt(skillId) } : null,
       items,
     };
 
@@ -163,6 +169,18 @@ const EditLearningPlan = () => {
                 <option value="IN_PROGRESS">In Progress</option>
                 <option value="COMPLETED">Completed</option>
                 <option value="ON_HOLD">On Hold</option>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="skill" value="Skill" />
+              <Select id="skill" value={skillId} onChange={(e) => setSkillId(e.target.value)}>
+                <option value="">Select a skill</option>
+                {skills.map((skill) => (
+                  <option key={skill.skillId} value={skill.skillId}>
+                    {skill.skillName}
+                  </option>
+                ))}
               </Select>
             </div>
 

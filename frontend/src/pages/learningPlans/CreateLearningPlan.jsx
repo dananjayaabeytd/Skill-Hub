@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Card,
@@ -21,10 +21,28 @@ const CreateLearningPlan = () => {
   const [expectedStartDate, setExpectedStartDate] = useState('');
   const [expectedEndDate, setExpectedEndDate] = useState('');
   const [status, setStatus] = useState('NOT_STARTED');
-  const [postId, setPostId] = useState('');
+  const [skillId, setSkillId] = useState('');
+  const [skills, setSkills] = useState([]);
+  //const [postId, setPostId] = useState('');
   const [items, setItems] = useState([
     { topic: '', resource: '', deadline: '', completed: false },
   ]);
+
+
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const res = await api.get('/skills');
+        setSkills(res.data);
+      } catch (err) {
+        console.error('Failed to fetch skills', err);
+      }
+    };
+
+    fetchSkills();
+  }, []);
+
+  
 
   const handleAddItem = () => {
     setItems([...items, { topic: '', resource: '', deadline: '', completed: false }]);
@@ -57,7 +75,8 @@ const CreateLearningPlan = () => {
       expectedEndDate,
       expectedDurationDays,
       status,
-      postId: postId ? parseInt(postId, 10) : null,
+      // postId: postId ? parseInt(postId, 10) : null,
+      skill: skillId ? { skillId: parseInt(skillId) } : null,
       items,
     };
 
@@ -128,13 +147,15 @@ const CreateLearningPlan = () => {
             </div>
 
             <div>
-              <Label value="Post ID (optional)" />
-              <TextInput
-                type="text"
-                value={postId}
-                placeholder="Related Post ID"
-                onChange={(e) => setPostId(e.target.value)}
-              />
+            <Label value="Skill" />
+              <Select value={skillId} onChange={(e) => setSkillId(e.target.value)}>
+                <option value="">Select a skill</option>
+                {skills.map((skill) => (
+                  <option key={skill.skillId} value={skill.skillId}>
+                    {skill.skillName}
+                  </option>
+                ))}
+              </Select>
             </div>
 
             <div>
