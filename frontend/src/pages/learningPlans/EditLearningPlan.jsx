@@ -33,12 +33,14 @@ const EditLearningPlan = () => {
   useEffect(() => {
     const fetchPlanAndItems = async () => {
       try {
-        const [planRes, itemsRes] = await Promise.all([
+        const [planRes, itemsRes, skillsRes] = await Promise.all([
           api.get(`/learning-plans/${id}`),
           api.get(`/learning-plans/${id}/items`),
           api.get(`/skills`),
         ]);
-
+        
+        setSkills(skillsRes.data || []);
+      
         const plan = planRes.data;
         setTitle(plan.title);
         setDescription(plan.description);
@@ -46,7 +48,6 @@ const EditLearningPlan = () => {
         setExpectedEndDate(plan.expectedEndDate || '');
         setStatus(plan.status || 'NOT_STARTED');
         setSkillId(plan.skill?.skillId || '');
-        setSkills(skills.data || []);
 
         const fetchedItems = itemsRes.data || [];
         const cleaned = fetchedItems.map(item => ({
