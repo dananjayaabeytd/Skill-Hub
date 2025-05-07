@@ -317,13 +317,13 @@ const SkillList = () => {
                 <p className="text-gray-500 mb-6">
                   {searchTerm ? 'Try adjusting your search' : 'Get started by adding a new skill'}
                 </p>
-                <Button 
+                {/* <Button 
                   gradientDuoTone="purpleToPink"
                   onClick={openAddModal}
                 >
                   <HiPlus className="mr-2" />
                   Add First Skill
-                </Button>
+                </Button> */}
               </motion.div>
             ) : (
               <motion.div 
