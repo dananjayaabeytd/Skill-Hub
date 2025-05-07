@@ -83,8 +83,10 @@ const ProgressForm = ({
         }
       );
       toast.success('Your progress is uploaded successfully!');
+      localStorage.setItem('recentlyEarnedBadgePlanId', planId);
       if (onSuccess) onSuccess();
-      navigate('/progress/all');
+      navigate(`/progress/plan/${planId}`);
+
     } catch (err) {
       console.error('Error creating progress entry:', err);
       toast.error('Failed to create progress entry.');
