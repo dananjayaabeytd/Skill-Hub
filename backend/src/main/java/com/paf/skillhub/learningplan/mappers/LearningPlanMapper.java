@@ -35,6 +35,7 @@ public class LearningPlanMapper {
         dto.setCompletionPercentage(plan.getCompletionPercentage());
 
         dto.setStatus(plan.getStatus() != null ? plan.getStatus().toString() : "NOT_STARTED");
+        dto.setSkillId(plan.getSkill() != null ? plan.getSkill().getSkillId() : null);
 
         List<LearningItemDTO> itemDTOs = plan.getItems()
             .stream()
