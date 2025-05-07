@@ -80,4 +80,14 @@ public class AdminController {
     }
   }
 
+  @DeleteMapping("/delete-user/{userId}")
+  public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+    try {
+      userService.deleteUser(userId);
+      return ResponseEntity.ok("User deleted successfully");
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+  }
+
 }
