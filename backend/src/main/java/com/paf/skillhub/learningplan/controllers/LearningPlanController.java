@@ -8,6 +8,8 @@ import com.paf.skillhub.learningplan.models.LearningPlan;
 import com.paf.skillhub.learningplan.models.PlanStatus;
 import com.paf.skillhub.learningplan.services.LearningItemService;
 import com.paf.skillhub.learningplan.services.LearningPlanService;
+import com.paf.skillhub.Skill.models.Skill;
+import com.paf.skillhub.Skill.repositories.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +31,9 @@ public class LearningPlanController {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private SkillRepository skillRepository;
 
     @PostMapping
     public ResponseEntity<LearningPlan> createPlan(@RequestBody LearningPlan plan,
@@ -46,6 +51,12 @@ public class LearningPlanController {
 
         if (plan.getCompletionPercentage() == null) {
             plan.setCompletionPercentage(0.0);
+        }
+
+        if (plan.getSkill() != null && plan.getSkill().getSkillId() != null) {
+            Skill skill = skillRepository.findById(plan.getSkill().getSkillId())
+                    .orElseThrow(() -> new RuntimeException("Skill not found"));
+            plan.setSkill(skill);
         }
 
         LearningPlan created = planService.createPlan(plan, user);
@@ -91,6 +102,12 @@ public class LearningPlanController {
 
         if (updatedPlan.getStatus() != null) {
             existingPlan.setStatus(updatedPlan.getStatus());
+        }
+
+        if (updatedPlan.getSkill() != null && updatedPlan.getSkill().getSkillId() != null) {
+            Skill skill = skillRepository.findById(updatedPlan.getSkill().getSkillId())
+                    .orElseThrow(() -> new RuntimeException("Skill not found"));
+            existingPlan.setSkill(skill);
         }
 
         existingPlan.setUpdatedAt(LocalDateTime.now());
