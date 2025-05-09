@@ -19,6 +19,8 @@ import {
   Bar,
 } from 'recharts';
 import { differenceInCalendarDays, parseISO } from 'date-fns';
+import Confetti from 'react-confetti';
+import { useWindowSize } from '@react-hook/window-size'; // optional for dynamic screen size
 
 const PlanProgressPage = () => {
   const { planId } = useParams();
@@ -29,6 +31,9 @@ const PlanProgressPage = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [newBadge, setNewBadge] = useState(null);
   const navigate = useNavigate();
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [width, height] = useWindowSize(); // gets dynamic window size
+
   const MAX_ENTRIES = 10;
 
   const fetchEntries = async () => {
@@ -115,7 +120,11 @@ const PlanProgressPage = () => {
         label: 'Plan Completed',
         desc: 'Congratulations on completing your entire plan!\nYou did it!',
       });
+
+      setShowConfetti(true); // 🎉 Start confetti
+      setTimeout(() => setShowConfetti(false), 6000); // ⏱️ stop after 5s
     }
+
 
 
   
@@ -361,6 +370,7 @@ const PlanProgressPage = () => {
           </div>
         </div>
       )}
+    {showConfetti && <Confetti width={width} height={height} numberOfPieces={300} />}
     </div>
   );
 };
