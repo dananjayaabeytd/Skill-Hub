@@ -46,9 +46,11 @@ const ProgressCard = ({ entry, user, isOwner, onEdit, onDelete }) => {
           }
           alt={user?.userName}
         />
-        <div className="ml-3">
-          <p className="text-sm font-medium text-gray-800">{user?.userName}</p>
-          <p className="text-xs text-gray-500">{getPostTimeLabel(entry.date)}</p>
+        <div className="ml-2">
+          <p className="text-sm font-medium text-gray-800">{entry.userName}</p>
+          <p className="text-xs text-gray-500">
+              {getPostTimeLabel(entry.date)}
+          </p>
         </div>
       </div>
 
