@@ -24,6 +24,8 @@ import SkillList from './pages/admin/skills/SkillList.jsx';
 import MyProfile from './pages/user/MyProfile.jsx';
 import MyWall from './pages/user/MyWall.jsx';
 import Userwall from './pages/user/UserWall.jsx';
+import MyWall from './pages/user/MyWall.jsx';
+import Userwall from './pages/user/UserWall.jsx';
 import UserWall from './pages/user/UserWall.jsx';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 

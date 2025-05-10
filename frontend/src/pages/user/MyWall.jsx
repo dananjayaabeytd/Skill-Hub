@@ -50,12 +50,16 @@ const MyWall = () => {
   const [followingData, setFollowingData] = useState([]);
   const [loadingFollowers, setLoadingFollowers] = useState(false);
   const [loadingFollowing, setLoadingFollowing] = useState(false);
+
+  // Inside the MyWall component, add this state
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
 
   const navigate = useNavigate();
 
   const handlePostCreated = newPost => {
     toast.success('Post created successfully!');
+    // If you have a posts state, you could update it here
+    // setUserPosts(prev => [newPost, ...prev]);
   };
 
   const fetchProgress = async () => {
@@ -75,6 +79,7 @@ const MyWall = () => {
 
   const fetchFollowers = async () => {
     if (!userId) return;
+
     setLoadingFollowers(true);
     try {
       const response = await api.get(`/followers/${userId}/list`);
@@ -87,8 +92,10 @@ const MyWall = () => {
     }
   };
 
+  // Fetch following data for modal
   const fetchFollowing = async () => {
     if (!userId) return;
+
     setLoadingFollowing(true);
     try {
       const response = await api.get(`/followers/${userId}/following`);
@@ -101,16 +108,19 @@ const MyWall = () => {
     }
   };
 
+  // Handle opening followers modal
   const handleOpenFollowersModal = () => {
     fetchFollowers();
     setShowFollowersModal(true);
   };
 
+  // Handle opening following modal
   const handleOpenFollowingModal = () => {
     fetchFollowing();
     setShowFollowingModal(true);
   };
 
+  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -128,12 +138,14 @@ const MyWall = () => {
     },
   };
 
+  // Fetch user profile
   const fetchUserDetails = useCallback(async () => {
     if (!userId) {
       setLoading(false);
       setError('You need to be logged in to view your wall');
       return;
     }
+
     try {
       const response = await api.get(`/users/profile/${userId}`);
       if (response.data) {
@@ -149,8 +161,10 @@ const MyWall = () => {
     }
   }, [userId]);
 
+  // Fetch user skills
   const fetchUserSkills = useCallback(async () => {
     if (!userId) return;
+
     setLoadingSkills(true);
     try {
       const response = await api.get(`/users/skills/${userId}`);
@@ -162,6 +176,7 @@ const MyWall = () => {
     }
   }, [userId]);
 
+  // Fetch social stats
   const fetchSocialStats = useCallback(async () => {
     if (!userId) return;
     try {
@@ -172,6 +187,7 @@ const MyWall = () => {
         console.error('Error fetching followers count', err);
         setFollowersCount(0);
       }
+
       try {
         const followingResponse = await api.get(`/followers/following/count/${userId}`);
         setFollowingCount(followingResponse.data || 0);
@@ -184,8 +200,10 @@ const MyWall = () => {
     }
   }, [userId]);
 
+  // Get user status badge
   const getUserStatusBadge = () => {
     if (!user) return null;
+
     if (user.enabled && user.accountNonLocked && user.accountNonExpired) {
       return <Badge color='success'>Active</Badge>;
     } else {
@@ -193,6 +211,7 @@ const MyWall = () => {
     }
   };
 
+  // Initialize data on component mount
   useEffect(() => {
     fetchUserDetails();
     fetchUserSkills();
