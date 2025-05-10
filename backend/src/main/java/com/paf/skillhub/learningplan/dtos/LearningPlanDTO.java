@@ -20,6 +20,5 @@ public class LearningPlanDTO {
     private LocalDateTime updatedAt;
     private Long userId;
     private Long postId;
-    private Long skillId; // ✅ Skill support
     private List<LearningItemDTO> items;
 }

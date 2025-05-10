@@ -3,7 +3,6 @@ package com.paf.skillhub.learningplan.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.paf.skillhub.User.models.User;
-import com.paf.skillhub.Skill.models.Skill;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,7 +36,7 @@ public class LearningPlan {
 
     private Double completionPercentage = 0.0;
 
-    private Long postId; // Optional: nullable FK to related post
+    private Long postId;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -47,15 +46,6 @@ public class LearningPlan {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User createdBy;
-
-    //@ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "skill_id", referencedColumnName = "skillId")
-    //private Skill skill;
-
-    @ManyToOne(fetch = FetchType.EAGER) // instead of LAZY
-    @JoinColumn(name = "skill_id", referencedColumnName = "skillId")
-    private Skill skill;
-
 
     @OneToMany(mappedBy = "learningPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

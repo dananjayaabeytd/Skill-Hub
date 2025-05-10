@@ -35,9 +35,6 @@ public class LearningPlanMapper {
         dto.setStatus(plan.getStatus() != null ? plan.getStatus().toString() : "NOT_STARTED");
         dto.setPostId(plan.getPostId());
 
-        // ✅ Skill ID mapping
-        dto.setSkillId(plan.getSkill() != null ? plan.getSkill().getSkillId() : null);
-
         List<LearningItemDTO> itemDTOs = plan.getItems()
             .stream()
             .map(LearningPlanMapper::toItemDTO)
