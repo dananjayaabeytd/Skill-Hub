@@ -300,16 +300,24 @@ const UserWall = () => {
       return <Badge color='gray'>Inactive</Badge>;
     }
   };
+  // With this corrected code:
+useEffect(() => {
+  fetchUserDetails();
+  fetchUserSkills();
+  fetchSocialStats();
+  fetchProgress();
+  checkFollowStatus();
+}, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
 
-  // Initialize data on component mount
-  useEffect(() => {
-    fetchUserDetails();
-    fetchUserSkills();
-    fetchSocialStats();
-    fetchProgress();
-  }, [fetchUserDetails, fetchUserSkills, fetchSocialStats]);
-    checkFollowStatus();
-  }, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
+  // // Initialize data on component mount
+  // useEffect(() => {
+  //   fetchUserDetails();
+  //   fetchUserSkills();
+  //   fetchSocialStats();
+  //   fetchProgress();
+  // }, [fetchUserDetails, fetchUserSkills, fetchSocialStats]);
+  //   checkFollowStatus();
+  // }, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
 
   // Render follow/unfollow button based on conditions
   const renderFollowButton = () => {
