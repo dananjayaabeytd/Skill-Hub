@@ -25,9 +25,6 @@ import MyProfile from './pages/user/MyProfile.jsx';
 import MyWall from './pages/user/MyWall.jsx';
 import Userwall from './pages/user/UserWall.jsx';
 import PaymentSuccess from './pages/payment/PaymentSuccess.jsx';
-import MyWall from './pages/user/MyWall.jsx';
-import Userwall from './pages/user/UserWall.jsx';
-import UserWall from './pages/user/UserWall.jsx';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import LearningPlans from './pages/learningPlans/LearningPlans';
