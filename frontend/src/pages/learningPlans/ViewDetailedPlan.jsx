@@ -25,19 +25,18 @@ const ViewDetailedPlan = () => {
     resource: '',
   });
 
-  useEffect(() => {
-    const fetchPlan = async () => {
-      try {
-        const res = await api.get(`/learning-plans/${id}`);
-        setPlan(res.data);
-      } catch (err) {
-        console.error(err);
-        toast.error('Failed to load plan');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchPlan = async () => {
+    try {
+      const res = await api.get(`/learning-plans/${id}`);
+      setPlan(res.data);
+    } catch (err) {
+      toast.error('Failed to refresh plan');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchPlan();
   }, [id]);
 
@@ -56,13 +55,10 @@ const ViewDetailedPlan = () => {
 
   const handleUpdateItem = async (itemId) => {
     try {
-      const res = await api.put(`/learning-plans/items/${itemId}`, editedFields);
-      const updatedItems = plan.items.map((item) =>
-        item.id === itemId ? res.data : item
-      );
-      setPlan({ ...plan, items: updatedItems });
-      setEditingItemId(null);
+      await api.put(`/learning-plans/items/${itemId}`, editedFields);
       toast.success('Item updated');
+      fetchPlan();
+      setEditingItemId(null);
     } catch (err) {
       toast.error('Failed to update item');
     }
@@ -70,12 +66,9 @@ const ViewDetailedPlan = () => {
 
   const handleMarkComplete = async (itemId) => {
     try {
-      const res = await api.put(`/learning-plans/items/${itemId}/complete`);
-      const updatedItems = plan.items.map((item) =>
-        item.id === itemId ? res.data : item
-      );
-      setPlan({ ...plan, items: updatedItems });
+      await api.put(`/learning-plans/items/${itemId}/complete`);
       toast.success('Marked as complete');
+      fetchPlan();
     } catch (err) {
       toast.error('Failed to mark complete');
     }
