@@ -755,66 +755,7 @@ useEffect(() => {
                   </div>
                 </div>
               </Tabs.Item>
-              <Tabs.Item
-                active={activeTab === 'progress'}
-                title='Progress Entry'
-                icon={HiOutlineChartBar}
-              >
-                <div className="py-4">
-                  <div className="flex flex-wrap gap-2 mb-4 items-center justify-between">
-                    <h3 className="text-xl font-semibold">My Progress Entries</h3>
-                  </div>
 
-                  {entries.length === 0 ? (
-                    <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                      <HiOutlineDocumentText className="mx-auto h-12 w-12 text-gray-400" />
-                      <p className="mt-2 text-gray-600 font-medium">You haven’t posted any progress yet</p>
-                      <p className="text-sm text-gray-500 mb-4">Share your milestones and learning progress with the community</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-6">
-                      {Object.entries(grouped).map(([planId, items]) => (
-                        <div
-                          key={planId}
-                          className="bg-gray-50 border border-gray-200 p-4 shadow-sm"
-                        >
-                          <div className="flex justify-between items-center mb-3">
-                            <h4 className="text-lg font-semibold text-gray-700">
-                              Plan #{planId}
-                            </h4>
-                            <span
-                              className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800"
-                              onClick={() => navigate(`/progress/plan/${planId}`)}
-                            >
-                              Track my progress on this plan →
-                            </span>
-                          </div>
-                          <div className="grid gap-4">
-                            {items.map((entry) => (
-                              <ProgressCard
-                                key={entry.id}
-                                entry={entry}
-                                user={user}
-                                isOwner={true}
-                                onEdit={() => navigate(`/progress/edit/${entry.id}`)}
-                                onDelete={async () => {
-                                  try {
-                                    await api.delete(`/progress/${entry.id}`);
-                                    toast.success('Entry deleted');
-                                    fetchProgress();
-                                  } catch (err) {
-                                    toast.error('Failed to delete entry');
-                                  }
-                                }}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Tabs.Item>
 
 
             </Tabs>

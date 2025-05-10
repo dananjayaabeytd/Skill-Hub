@@ -53,9 +53,9 @@ public static UserDetailsImpl build(User user) {
         user.getEmail(),
         user.getPassword(),
         user.isTwoFactorEnabled(),
-        List.of(authority)
+        List.of(authority) // Wrapping the single authority in a list
     );
-}
+  }
 
 
   @Override
