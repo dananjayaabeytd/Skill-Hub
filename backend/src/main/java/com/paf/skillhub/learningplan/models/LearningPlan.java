@@ -1,11 +1,11 @@
 package com.paf.skillhub.learningplan.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.paf.skillhub.User.models.User;
+import com.paf.skillhub.Skill.models.Skill;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,8 +48,16 @@ public class LearningPlan {
     @JsonIgnore
     private User createdBy;
 
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "skill_id", referencedColumnName = "skillId")
+    //private Skill skill;
+
+    @ManyToOne(fetch = FetchType.EAGER) // instead of LAZY
+    @JoinColumn(name = "skill_id", referencedColumnName = "skillId")
+    private Skill skill;
+
+
     @OneToMany(mappedBy = "learningPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<LearningItem> items;
-
 }

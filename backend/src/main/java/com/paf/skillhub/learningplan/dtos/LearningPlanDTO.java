@@ -1,8 +1,9 @@
 package com.paf.skillhub.learningplan.dtos;
 
 import lombok.Data;
-import java.time.LocalDateTime;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -13,14 +14,12 @@ public class LearningPlanDTO {
     private LocalDate expectedStartDate;
     private LocalDate expectedEndDate;
     private Integer expectedDurationDays;
-    private String status; // e.g., "Not Started", "In Progress", "Completed"
+    private String status;
     private Double completionPercentage;
-
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     private Long userId;
-    private Long postId; // Optional field to link with a shared post
-
-    private List<LearningItemDTO> items; // Detailed items
+    private Long postId;
+    private Long skillId; // ✅ Skill support
+    private List<LearningItemDTO> items;
 }
