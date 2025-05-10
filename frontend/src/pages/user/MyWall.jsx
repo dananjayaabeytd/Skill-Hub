@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import ProgressCard from "../progress/ProgressCard";
 import {
   Card,
   Spinner,
@@ -20,6 +21,7 @@ import {
   HiOutlineCog,
   HiOutlineX,
   HiOutlineExternalLink,
+  HiOutlineChartBar,
 } from 'react-icons/hi';
 
 import api from '../../services/api';
@@ -40,6 +42,7 @@ const MyWall = () => {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [error, setError] = useState(null);
+  const [entries, setEntries] = useState([]);
 
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
@@ -47,21 +50,31 @@ const MyWall = () => {
   const [followingData, setFollowingData] = useState([]);
   const [loadingFollowers, setLoadingFollowers] = useState(false);
   const [loadingFollowing, setLoadingFollowing] = useState(false);
-
-  // Inside the MyWall component, add this state
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
 
   const navigate = useNavigate();
 
   const handlePostCreated = newPost => {
     toast.success('Post created successfully!');
-    // If you have a posts state, you could update it here
-    // setUserPosts(prev => [newPost, ...prev]);
   };
+
+  const fetchProgress = async () => {
+    try {
+      const res = await api.get('/progress/me');
+      setEntries(res.data || []);
+    } catch (err) {
+      console.error('Failed to fetch user progress');
+    }
+  };
+
+  const grouped = entries.reduce((acc, entry) => {
+    if (!acc[entry.planId]) acc[entry.planId] = [];
+    acc[entry.planId].push(entry);
+    return acc;
+  }, {});
 
   const fetchFollowers = async () => {
     if (!userId) return;
-
     setLoadingFollowers(true);
     try {
       const response = await api.get(`/followers/${userId}/list`);
@@ -74,10 +87,8 @@ const MyWall = () => {
     }
   };
 
-  // Fetch following data for modal
   const fetchFollowing = async () => {
     if (!userId) return;
-
     setLoadingFollowing(true);
     try {
       const response = await api.get(`/followers/${userId}/following`);
@@ -90,19 +101,16 @@ const MyWall = () => {
     }
   };
 
-  // Handle opening followers modal
   const handleOpenFollowersModal = () => {
     fetchFollowers();
     setShowFollowersModal(true);
   };
 
-  // Handle opening following modal
   const handleOpenFollowingModal = () => {
     fetchFollowing();
     setShowFollowingModal(true);
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -120,14 +128,12 @@ const MyWall = () => {
     },
   };
 
-  // Fetch user profile
   const fetchUserDetails = useCallback(async () => {
     if (!userId) {
       setLoading(false);
       setError('You need to be logged in to view your wall');
       return;
     }
-
     try {
       const response = await api.get(`/users/profile/${userId}`);
       if (response.data) {
@@ -143,10 +149,8 @@ const MyWall = () => {
     }
   }, [userId]);
 
-  // Fetch user skills
   const fetchUserSkills = useCallback(async () => {
     if (!userId) return;
-
     setLoadingSkills(true);
     try {
       const response = await api.get(`/users/skills/${userId}`);
@@ -158,12 +162,9 @@ const MyWall = () => {
     }
   }, [userId]);
 
-  // Fetch social stats
   const fetchSocialStats = useCallback(async () => {
     if (!userId) return;
-
     try {
-      // Try-catch each request separately to prevent one failure from stopping others
       try {
         const followersResponse = await api.get(`/followers/count/${userId}`);
         setFollowersCount(followersResponse.data || 0);
@@ -171,11 +172,8 @@ const MyWall = () => {
         console.error('Error fetching followers count', err);
         setFollowersCount(0);
       }
-
       try {
-        const followingResponse = await api.get(
-          `/followers/following/count/${userId}`
-        );
+        const followingResponse = await api.get(`/followers/following/count/${userId}`);
         setFollowingCount(followingResponse.data || 0);
       } catch (err) {
         console.error('Error fetching following count', err);
@@ -186,10 +184,8 @@ const MyWall = () => {
     }
   }, [userId]);
 
-  // Get user status badge
   const getUserStatusBadge = () => {
     if (!user) return null;
-
     if (user.enabled && user.accountNonLocked && user.accountNonExpired) {
       return <Badge color='success'>Active</Badge>;
     } else {
@@ -197,11 +193,11 @@ const MyWall = () => {
     }
   };
 
-  // Initialize data on component mount
   useEffect(() => {
     fetchUserDetails();
     fetchUserSkills();
     fetchSocialStats();
+    fetchProgress();
   }, [fetchUserDetails, fetchUserSkills, fetchSocialStats]);
 
   if (loading) {
@@ -574,6 +570,68 @@ const MyWall = () => {
                   />
                 </div>
               </Tabs.Item>
+
+              <Tabs.Item
+                active={activeTab === 'progress'}
+                title='Progress Entry'
+                icon={HiOutlineChartBar}
+              >
+                <div className="py-4">
+                  <div className="flex flex-wrap gap-2 mb-4 items-center justify-between">
+                    <h3 className="text-xl font-semibold">My Progress Entries</h3>
+                  </div>
+
+                  {entries.length === 0 ? (
+                    <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                      <HiOutlineDocumentText className="mx-auto h-12 w-12 text-gray-400" />
+                      <p className="mt-2 text-gray-600 font-medium">You haven’t posted any progress yet</p>
+                      <p className="text-sm text-gray-500 mb-4">Share your milestones and learning progress with the community</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {Object.entries(grouped).map(([planId, items]) => (
+                        <div
+                          key={planId}
+                          className="bg-gray-50 border border-gray-200 p-4 shadow-sm"
+                        >
+                          <div className="flex justify-between items-center mb-3">
+                            <h4 className="text-lg font-semibold text-gray-700">
+                              Plan #{planId}
+                            </h4>
+                            <span
+                              className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800"
+                              onClick={() => navigate(`/progress/plan/${planId}`)}
+                            >
+                              Track my progress on this plan →
+                            </span>
+                          </div>
+                          <div className="grid gap-4">
+                            {items.map((entry) => (
+                              <ProgressCard
+                                key={entry.id}
+                                entry={entry}
+                                user={user}
+                                isOwner={true}
+                                onEdit={() => navigate(`/progress/edit/${entry.id}`)}
+                                onDelete={async () => {
+                                  try {
+                                    await api.delete(`/progress/${entry.id}`);
+                                    toast.success('Entry deleted');
+                                    fetchProgress();
+                                  } catch (err) {
+                                    toast.error('Failed to delete entry');
+                                  }
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </Tabs.Item>
+
 
               <Tabs.Item
                 active={activeTab === 'other'}
