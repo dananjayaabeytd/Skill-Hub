@@ -109,7 +109,13 @@ const ProgressForm = ({
 
       <div>
         <Label htmlFor="date" value="Date" />
-        <TextInput type="date" id="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <TextInput
+          type="date"
+          id="date"
+          value={date}
+          min={new Date().toISOString().split('T')[0]} // prevents past dates
+          onChange={(e) => setDate(e.target.value)}
+        />
         {errors.date && <p className="text-red-600 text-sm mt-1">{errors.date}</p>}
       </div>
 
