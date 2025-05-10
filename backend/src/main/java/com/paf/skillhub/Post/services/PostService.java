@@ -1,5 +1,8 @@
 package com.paf.skillhub.Post.services;
 
+import com.paf.skillhub.Follow.repositories.FollowerRepository;
+import com.paf.skillhub.Notification.Enums.NotificationType;
+import com.paf.skillhub.Notification.services.NotificationService;
 import com.paf.skillhub.Post.dto.PostDTO;
 import com.paf.skillhub.Post.dto.PostMediaDTO;
 import com.paf.skillhub.Post.dto.PostResponseDTO;
@@ -52,7 +55,10 @@ public class PostService {
   private SkillRepository skillRepository;
 
   @Autowired
-  private FileUploadService fileUploadService;
+  private FollowerRepository followerRepository;
+
+  @Autowired
+  private NotificationService notificationService;
 
   @Autowired
   private GCSService gcsService;
@@ -121,6 +127,11 @@ public class PostService {
       }
     }
 
+    User postUser = userRepository.getByUserId(postDTO.getUserId());
+    List<Long> userIdsToSendNotification = followerRepository.findFollowerUserIdsByUserId(postDTO.getUserId());
+    String message = postUser.getUserName() + " added new post";
+    notificationService.createNotificationsForMultipleUsers(userIdsToSendNotification,postDTO.getUserId(), NotificationType.POST,message);
+
     postMediaRepository.saveAll(mediaList);
     return savedPost;
   }
@@ -139,48 +150,6 @@ public class PostService {
 
     return savedPost;
   }
-
-//  public Post addPost(PostDTO postDTO, List<MultipartFile> files)
-//      throws IOException, GeneralSecurityException {
-//    // Get skill if skillId is provided
-//    Skill skill = null;
-//    if (postDTO.getSkillId() != null) {
-//      skill = skillRepository.getSkillBySkillId(postDTO.getSkillId());
-//    }
-//
-//    // Get user
-//    User user = userRepository.getByUserId(postDTO.getUserId());
-//
-//    // Create new post
-//    Post newPost = new Post();
-//    newPost.setDescription(postDTO.getDescription());
-//    newPost.setSkill(skill);
-//    newPost.setCreatedAt(LocalDateTime.now());
-//    newPost.setUser(user);
-//
-//    Post savedPost = postRepository.save(newPost);
-//
-//    // Handle file uploads
-//    List<PostMedia> mediaList = new ArrayList<>();
-//    for (MultipartFile file : files) {
-//      if (!file.isEmpty()) {
-//        File tempFile = File.createTempFile("temp", null);
-//        file.transferTo(tempFile);
-//        Res res = fileUploadService.uploadFileToDrive(tempFile, file.getContentType());
-//
-//        PostMedia media = new PostMedia();
-//        media.setPost(savedPost);
-//        media.setCreatedAt(LocalDateTime.now());
-//        media.setMediaUrl(res.getUrl());
-//        media.setMediaType(
-//            file.getContentType().startsWith("image") ? MediaType.PHOTO : MediaType.VIDEO);
-//        mediaList.add(media);
-//      }
-//    }
-//
-//    postMediaRepository.saveAll(mediaList);
-//    return savedPost;
-//  }
 
   public List<PostResponseDTO> getPostsByUser(Long userId) {
     List<Post> posts = postRepository.findByUserUserId(userId);

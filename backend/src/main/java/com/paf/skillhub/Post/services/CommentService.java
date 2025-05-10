@@ -1,5 +1,7 @@
 package com.paf.skillhub.Post.services;
 
+import com.paf.skillhub.Notification.Enums.NotificationType;
+import com.paf.skillhub.Notification.services.NotificationService;
 import com.paf.skillhub.Post.dto.CommentDTO;
 import com.paf.skillhub.Post.models.Comment;
 import com.paf.skillhub.Post.models.Post;
@@ -25,6 +27,9 @@ public class CommentService {
   private PostRepository postRepository;
 
   @Autowired
+  private NotificationService notificationService;
+
+  @Autowired
   private UserRepository userRepository;
 
   public CommentDTO addComment(Long postId, Long userId, String commentText) {
@@ -39,6 +44,10 @@ public class CommentService {
     comment.setUser(user);
     comment.setCommentText(commentText);
     comment.setCreatedAt(LocalDateTime.now());
+
+    String truncatedComment = commentText.length() > 10 ? commentText.substring(0, 10) : commentText;
+    String message = " commented: \"" + truncatedComment + "...\" on your post.";
+    notificationService.createNotification(post.getUser().getUserId(),userId, NotificationType.COMMENT,message);
 
     Comment savedComment = commentRepository.save(comment);
     return convertToDTO(savedComment);

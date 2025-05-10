@@ -45,6 +45,53 @@ public class NotificationService {
     notificationRepository.save(notification);
   }
 
+  /**
+   * Creates notifications for multiple users with the same content
+   *
+   * @param userIds List of user IDs who should receive the notification
+   * @param senderUserId ID of the user who triggered the notification
+   * @param type Type of notification
+   * @param message Notification message text
+   * @return Number of notifications successfully created
+   */
+  public int createNotificationsForMultipleUsers(List<Long> userIds, Long senderUserId,
+      NotificationType type, String message) {
+
+    if (userIds == null || userIds.isEmpty()) {
+      return 0;
+    }
+
+    User senderUser = userRepository.findById(senderUserId)
+        .orElseThrow(() -> new RuntimeException("Sender user not found with id: " + senderUserId));
+
+    LocalDateTime now = LocalDateTime.now();
+    List<Notification> notifications = userIds.stream()
+        .map(userId -> {
+          try {
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+            Notification notification = new Notification();
+            notification.setUser(user);
+            notification.setSenderUser(senderUser);
+            notification.setNotificationType(type);
+            notification.setMessage(message);
+            notification.setIsRead(false);
+            notification.setCreatedAt(now);
+
+            return notification;
+          } catch (Exception e) {
+            // Log error but continue processing other users
+            return null;
+          }
+        })
+        .filter(notification -> notification != null)
+        .collect(Collectors.toList());
+
+    notificationRepository.saveAll(notifications);
+    return notifications.size();
+  }
+
   public Page<NotificationDTO> getUserNotifications(Long userId, int page, int size) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));

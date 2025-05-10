@@ -77,8 +77,6 @@ useEffect(() => {
         setSearchResults(results.map(user => ({
           id: user.userId,
           name: user.userName,
-          // Extract roleName from the role object
-          role: user.role?.roleName || 'User',
           avatar: user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.userName)}&background=random`
         })));
         

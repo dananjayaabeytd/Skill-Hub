@@ -31,4 +31,7 @@ public interface FollowerRepository extends JpaRepository<Follower, Long> {
 
   // Delete all followers where the user_id matches the given user ID
   void deleteByUser_UserId(Long userId);
+
+  @Query("SELECT f.followerUser.userId FROM Follower f WHERE f.user.userId = :userId")
+  List<Long> findFollowerUserIdsByUserId(Long userId);
 }

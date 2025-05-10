@@ -86,7 +86,7 @@ const Comments = ({ postId, userId, onClose }) => {
     try {
       setSubmitting(true);
       const response = await api.post('/comments', newComment, {
-        params: { postId, userId }
+        params: { postId, userId: currentUserId }
       });
       
       // Make sure to check the response format
@@ -108,7 +108,7 @@ const Comments = ({ postId, userId, onClose }) => {
     if (!window.confirm('Are you sure you want to delete this comment?')) return;
     
     try {
-      await api.delete(`/comments/user/${userId}/comment/${commentId}`);
+      await api.delete(`/comments/user/${currentUserId}/comment/${commentId}`);
       setComments(prevComments => 
         prevComments.filter(comment => comment.commentId !== commentId)
       );
@@ -137,7 +137,7 @@ const Comments = ({ postId, userId, onClose }) => {
     
     try {
       const response = await api.put(`/comments/${commentId}`, editText, {
-        params: { userId }
+        params: { userId: currentUserId }
       });
       
       if (response.data) {
@@ -196,7 +196,8 @@ const Comments = ({ postId, userId, onClose }) => {
             {comments.map((comment) => {
               const commentUserId = getUserIdFromComment(comment);
               const user = userDetails[commentUserId] || {};
-              const isOwner = commentUserId === userId || currentUserId;
+              // Only show edit/delete if comment's userId equals currentUserId
+              const isOwner = commentUserId === currentUserId || commentUserId === userId;
               
               return (
                 <div key={comment.commentId} className="flex space-x-3">

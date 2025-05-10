@@ -1,6 +1,8 @@
 package com.paf.skillhub.Post.services;
 
 
+import com.paf.skillhub.Notification.Enums.NotificationType;
+import com.paf.skillhub.Notification.services.NotificationService;
 import com.paf.skillhub.Post.models.Post;
 import com.paf.skillhub.Post.models.PostLike;
 import com.paf.skillhub.Post.repositories.PostLikeRepository;
@@ -25,6 +27,9 @@ public class LikeService {
   @Autowired
   private UserRepository userRepository;
 
+  @Autowired
+  private NotificationService notificationService;
+
   public void likePost(Long postId, Long userId) {
 
     Post post = postRepository.getPostByPostId(postId);
@@ -36,6 +41,10 @@ public class LikeService {
       like.setPost(post);
       like.setUser(user);
       like.setCreatedAt(LocalDateTime.now());
+
+      String message = user.getUserName() + " liked your post.";
+
+      notificationService.createNotification(post.getUser().getUserId(),userId, NotificationType.LIKE,message);
       likeRepository.save(like);
     } else {
       throw new IllegalArgumentException("User has already liked this post.");
