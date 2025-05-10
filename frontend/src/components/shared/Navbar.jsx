@@ -16,27 +16,27 @@ export function MenuBar() {
   const { token, setToken, currentUser, setCurrentUser, isAdmin, setIsAdmin } =
     useMyContext();
 
-    // Handle premium checkout process
-const handlePremiumCheckout = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await api.post('/payment/checkout', {
-      amount: 100,
-      quantity: 1,
-      currency: "USD",
-      name: "Premium"
-    });
-    
-    if (response.data.status === "SUCCESS" && response.data.sessionUrl) {
-      // Open payment URL in a new tab
-      window.open(response.data.sessionUrl, '_blank');
-    } else {
-      console.error('Payment session creation failed');
+  // Handle premium checkout process
+  const handlePremiumCheckout = async e => {
+    e.preventDefault();
+    try {
+      const response = await api.post('/payment/checkout', {
+        amount: 100,
+        quantity: 1,
+        currency: 'USD',
+        name: 'Premium',
+      });
+
+      if (response.data.status === 'SUCCESS' && response.data.sessionUrl) {
+        // Open payment URL in a new tab
+        window.open(response.data.sessionUrl, '_blank');
+      } else {
+        console.error('Payment session creation failed');
+      }
+    } catch (err) {
+      console.error('Error initiating payment:', err);
     }
-  } catch (err) {
-    console.error('Error initiating payment:', err);
-  }
-};
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('JWT_TOKEN');
@@ -58,7 +58,7 @@ const handlePremiumCheckout = async (e) => {
       </Navbar.Brand>
 
       {/* Center-right - Search */}
-      <div className="flex-grow mx-4 hidden md:block md:max-w-sm lg:max-w-md">
+      <div className='flex-grow mx-4 hidden md:block md:max-w-sm lg:max-w-md'>
         <GlobalSearch />
       </div>
       <div className='flex md:order-2'>
@@ -132,11 +132,36 @@ const handlePremiumCheckout = async (e) => {
         <Navbar.Link as={Link} to='/services' active={pathName === '/services'}>
           Services
         </Navbar.Link>
-        {token && (
-        <Navbar.Link href="#" onClick={handlePremiumCheckout} active={pathName === '/pricing'}>
-          Get Premium
-        </Navbar.Link>
-      )}
+        {token && currentUser && !currentUser.premium && (
+          <Navbar.Link
+            href='#'
+            onClick={handlePremiumCheckout}
+            active={pathName === '/pricing'}
+            className='relative group'
+          >
+            <span className='flex items-center'>
+              Get Premium
+              <span className='ml-1.5 hidden group-hover:inline-block'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  viewBox='0 0 20 20'
+                  fill='currentColor'
+                  className='w-4 h-4 text-amber-500'
+                >
+                  <path
+                    fillRule='evenodd'
+                    d='M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z'
+                    clipRule='evenodd'
+                  />
+                </svg>
+              </span>
+            </span>
+            <span className='absolute -top-1 -right-1 flex h-3 w-3'>
+              <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75'></span>
+              <span className='relative inline-flex rounded-full h-3 w-3 bg-amber-500'></span>
+            </span>
+          </Navbar.Link>
+        )}
       </Navbar.Collapse>
     </Navbar>
   );

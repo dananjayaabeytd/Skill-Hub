@@ -43,7 +43,7 @@ const UserWall = () => {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [error, setError] = useState(null);
-  
+
   // New state for follow functionality
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
@@ -65,20 +65,20 @@ const UserWall = () => {
     // If you have a posts state, you could update it here
     // setUserPosts(prev => [newPost, ...prev]);
   };
-  
+
   // Check if current user is following the profile user
   const checkFollowStatus = useCallback(async () => {
     // Only check follow status if viewing someone else's profile
     if (!currentUserId || !userId || currentUserId === parseInt(userId)) {
       return;
     }
-    
+
     try {
       const response = await api.get(`/followers/check`, {
         params: {
           userId: userId,
-          followerUserId: currentUserId
-        }
+          followerUserId: currentUserId,
+        },
       });
       setIsFollowing(response.data);
     } catch (err) {
@@ -93,16 +93,16 @@ const UserWall = () => {
       toast.error('You need to be logged in to follow users');
       return;
     }
-    
+
     setFollowLoading(true);
     try {
       await api.post('/followers/follow', null, {
         params: {
           userId: userId,
-          followerUserId: currentUserId
-        }
+          followerUserId: currentUserId,
+        },
       });
-      
+
       setIsFollowing(true);
       // Update followers count
       setFollowersCount(prev => prev + 1);
@@ -120,16 +120,16 @@ const UserWall = () => {
     if (!currentUserId || !userId) {
       return;
     }
-    
+
     setFollowLoading(true);
     try {
       await api.delete('/followers/unfollow', {
         params: {
           userId: userId,
-          followerUserId: currentUserId
-        }
+          followerUserId: currentUserId,
+        },
       });
-      
+
       setIsFollowing(false);
       // Update followers count
       setFollowersCount(prev => Math.max(prev - 1, 0));
@@ -293,10 +293,7 @@ const UserWall = () => {
     // Don't show follow button on your own profile
     if (!currentUserId || currentUserId === parseInt(userId)) {
       return (
-        <motion.div
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.98 }}
-        >
+        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
           <Button
             gradientDuoTone='purpleToPink'
             size='sm'
@@ -308,12 +305,9 @@ const UserWall = () => {
         </motion.div>
       );
     }
-    
+
     return (
-      <motion.div
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.98 }}
-      >
+      <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
         <Button
           gradientDuoTone={isFollowing ? 'cyanToBlue' : 'purpleToPink'}
           size='sm'
@@ -322,18 +316,18 @@ const UserWall = () => {
           disabled={followLoading}
         >
           {followLoading ? (
-            <div className="flex items-center justify-center">
-              <Spinner size="sm" className="mr-2" />
+            <div className='flex items-center justify-center'>
+              <Spinner size='sm' className='mr-2' />
               <span>Processing</span>
             </div>
           ) : isFollowing ? (
-            <div className="flex items-center">
-              <HiOutlineUserRemove className="mr-2" />
+            <div className='flex items-center'>
+              <HiOutlineUserRemove className='mr-2' />
               <span>Unfollow</span>
             </div>
           ) : (
-            <div className="flex items-center">
-              <HiOutlineUserAdd className="mr-2" />
+            <div className='flex items-center'>
+              <HiOutlineUserAdd className='mr-2' />
               <span>Follow</span>
             </div>
           )}
@@ -361,7 +355,9 @@ const UserWall = () => {
         <h2 className='text-2xl font-bold text-gray-800'>
           Profile not available
         </h2>
-        <p className='text-gray-600 mt-2'>Please log in to view this profile.</p>
+        <p className='text-gray-600 mt-2'>
+          Please log in to view this profile.
+        </p>
         <Button
           color='purple'
           className='mt-4'
@@ -413,16 +409,135 @@ const UserWall = () => {
               <div className='flex flex-col md:flex-row justify-between'>
                 {/* User info with improved typography */}
                 <div className='mb-6 md:mb-0'>
-                  <div className='flex flex-wrap items-center'>
-                    <h1 className='text-2xl font-extrabold text-gray-800 mr-2'>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className='flex flex-wrap items-center gap-3 mb-2'
+                  >
+                    {/* Username with text reveal animation */}
+                    <motion.h1
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className='text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-800 to-gray-600'
+                    >
                       {user.userName}
-                    </h1>
-                    {isOwnProfile && (
-                      <span className='text-sm text-white bg-purple-500 py-0.5 px-3 rounded-full font-medium'>
-                        You
-                      </span>
+                    </motion.h1>
+
+                    {/* Premium badge with shimmer effect */}
+                    {user.premium && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{
+                          delay: 0.4,
+                          type: 'spring',
+                          stiffness: 120,
+                          damping: 10,
+                        }}
+                        className='relative overflow-hidden'
+                      >
+                        <div className='absolute inset-0 z-10'>
+                          <motion.div
+                            initial={{ x: -100 }}
+                            animate={{ x: 100 }}
+                            transition={{
+                              repeat: Infinity,
+                              repeatType: 'loop',
+                              duration: 2,
+                              ease: 'linear',
+                              delay: 1,
+                            }}
+                            className='w-20 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-20'
+                          />
+                        </div>
+                        <div className='flex items-center bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full py-1 px-4 shadow-md relative z-0'>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            viewBox='0 0 24 24'
+                            fill='currentColor'
+                            className='w-4 h-4 mr-1.5 text-white'
+                          >
+                            <path d='M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z' />
+                          </svg>
+                          <span className='text-xs font-bold text-white'>
+                            Premium
+                          </span>
+                        </div>
+                      </motion.div>
                     )}
-                  </div>
+                  </motion.div>
+
+                  {/* Premium membership details with animated entry */}
+                  {user.premium && user.lastPaymentDateTime && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{
+                        opacity: 1,
+                        height: 'auto',
+                        transition: {
+                          height: {
+                            delay: 0.6,
+                            duration: 0.4,
+                          },
+                          opacity: {
+                            delay: 0.8,
+                            duration: 0.4,
+                          },
+                        },
+                      }}
+                      className='overflow-hidden'
+                    >
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{
+                          opacity: 1,
+                          y: 0,
+                          transition: {
+                            delay: 1,
+                            type: 'spring',
+                            stiffness: 100,
+                            damping: 20,
+                          },
+                        }}
+                        className='mt-1.5 mb-3'
+                      >
+                        <div className='flex items-center'>
+                          <div className='relative'>
+                            <div className='absolute inset-0 bg-amber-300 rounded-full animate-pulse opacity-30'></div>
+                            <div className='bg-gradient-to-br from-amber-100 to-amber-50 rounded-full p-1.5 border border-amber-300 shadow-inner'>
+                              <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                className='h-4 w-4 text-amber-600'
+                                viewBox='0 0 20 20'
+                                fill='currentColor'
+                              >
+                                <path
+                                  fillRule='evenodd'
+                                  d='M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
+                                  clipRule='evenodd'
+                                />
+                              </svg>
+                            </div>
+                          </div>
+                          <div className='ml-2.5'>
+                            <span className='text-xs uppercase tracking-wider font-medium text-amber-700'>
+                              Premium member since
+                            </span>
+                            <div className='text-sm font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent'>
+                              {new Date(
+                                user.lastPaymentDateTime
+                              ).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  )}
 
                   <p className='text-gray-600 flex items-center mt-1.5 font-medium'>
                     <HiOutlineMail className='mr-2 text-purple-500' />
@@ -919,7 +1034,9 @@ const UserWall = () => {
                             color='light'
                             onClick={() => {
                               setShowFollowingModal(false);
-                              navigate(`/user-wall/${following.followerUserId}`);
+                              navigate(
+                                `/user-wall/${following.followerUserId}`
+                              );
                             }}
                           >
                             <HiOutlineExternalLink className='h-4 w-4' />
