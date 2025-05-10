@@ -20,6 +20,7 @@ import {
   HiOutlineCog,
   HiOutlineX,
   HiOutlineExternalLink,
+  HiOutlineChartBar,
   HiOutlineUserAdd,
   HiOutlineUserRemove,
 } from 'react-icons/hi';
@@ -43,7 +44,7 @@ const UserWall = () => {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [error, setError] = useState(null);
-  
+
   // New state for follow functionality
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
@@ -65,14 +66,14 @@ const UserWall = () => {
     // If you have a posts state, you could update it here
     // setUserPosts(prev => [newPost, ...prev]);
   };
-  
+
   // Check if current user is following the profile user
   const checkFollowStatus = useCallback(async () => {
     // Only check follow status if viewing someone else's profile
     if (!currentUserId || !userId || currentUserId === parseInt(userId)) {
       return;
     }
-    
+
     try {
       const response = await api.get(`/followers/check`, {
         params: {
@@ -93,7 +94,7 @@ const UserWall = () => {
       toast.error('You need to be logged in to follow users');
       return;
     }
-    
+
     setFollowLoading(true);
     try {
       await api.post('/followers/follow', null, {
@@ -102,7 +103,7 @@ const UserWall = () => {
           followerUserId: currentUserId
         }
       });
-      
+
       setIsFollowing(true);
       // Update followers count
       setFollowersCount(prev => prev + 1);
@@ -120,7 +121,7 @@ const UserWall = () => {
     if (!currentUserId || !userId) {
       return;
     }
-    
+
     setFollowLoading(true);
     try {
       await api.delete('/followers/unfollow', {
@@ -129,7 +130,7 @@ const UserWall = () => {
           followerUserId: currentUserId
         }
       });
-      
+
       setIsFollowing(false);
       // Update followers count
       setFollowersCount(prev => Math.max(prev - 1, 0));
@@ -269,6 +270,7 @@ const UserWall = () => {
     }
   }, [userId]);
 
+
   // Get user status badge
   const getUserStatusBadge = () => {
     if (!user) return null;
@@ -279,14 +281,23 @@ const UserWall = () => {
       return <Badge color='gray'>Inactive</Badge>;
     }
   };
+  // With this corrected code:
+useEffect(() => {
+  fetchUserDetails();
+  fetchUserSkills();
+  fetchSocialStats();
+  checkFollowStatus();
+}, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
 
-  // Initialize data on component mount
-  useEffect(() => {
-    fetchUserDetails();
-    fetchUserSkills();
-    fetchSocialStats();
-    checkFollowStatus();
-  }, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
+  // // Initialize data on component mount
+  // useEffect(() => {
+  //   fetchUserDetails();
+  //   fetchUserSkills();
+  //   fetchSocialStats();
+  //   fetchProgress();
+  // }, [fetchUserDetails, fetchUserSkills, fetchSocialStats]);
+  //   checkFollowStatus();
+  // }, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
 
   // Render follow/unfollow button based on conditions
   const renderFollowButton = () => {
@@ -308,7 +319,7 @@ const UserWall = () => {
         </motion.div>
       );
     }
-    
+
     return (
       <motion.div
         whileHover={{ scale: 1.03 }}
@@ -733,6 +744,9 @@ const UserWall = () => {
                   </div>
                 </div>
               </Tabs.Item>
+
+
+
             </Tabs>
           </Card>
         </motion.div>

@@ -7,7 +7,6 @@ import NotificationBell from '../../utils/NotificationBell.jsx';
 import GlobalSearch from './GlobalSearch.jsx';
 
 export function MenuBar() {
-  //handle the header opening and closing menu for the tablet/mobile device
   const pathName = useLocation().pathname;
   const navigate = useNavigate();
 
@@ -28,7 +27,7 @@ export function MenuBar() {
 
   return (
     <Navbar fluid rounded>
-      <Navbar.Brand href='https://flowbite-react.com'>
+      <Navbar.Brand href='/'>
         <span className='self-center whitespace-nowrap text-xl font-semibold dark:text-white'>
           Skill Hub
         </span>
@@ -112,6 +111,33 @@ export function MenuBar() {
         <Navbar.Link as={Link} to='/pricing' active={pathName === '/pricing'}>
           Premium
         </Navbar.Link>
+        {/* Plans Dropdown with hover effects */}
+        <Dropdown
+          inline
+          label="Plans"
+          className="text-gray-700 hover:text-blue-700 font-medium"
+        >
+          <Dropdown.Item as={Link} to="/plans">
+            View Plans
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/plans/create">
+            Create Plan
+          </Dropdown.Item>
+        </Dropdown>
+
+        <Dropdown
+          inline
+          label="Progress"
+          className="text-gray-700 hover:text-blue-700 font-medium"
+        >
+        <Dropdown.Item as={Link} to="/progress/all">
+            View User Progress
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/progress/my">
+            View My Progress
+          </Dropdown.Item>
+        </Dropdown>
+
       </Navbar.Collapse>
     </Navbar>
   );

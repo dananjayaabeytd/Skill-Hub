@@ -122,4 +122,70 @@ public class User {
   public int hashCode() {
     return getClass().hashCode();
   }
+
+
+  public boolean isAccountNonLocked() {
+    return accountNonLocked;
+}
+
+public void setAccountNonLocked(boolean accountNonLocked) {
+    this.accountNonLocked = accountNonLocked;
+}
+
+public boolean isAccountNonExpired() {
+    return accountNonExpired;
+}
+
+public void setAccountNonExpired(boolean accountNonExpired) {
+    this.accountNonExpired = accountNonExpired;
+}
+
+public boolean isCredentialsNonExpired() {
+    return credentialsNonExpired;
+}
+
+public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+    this.credentialsNonExpired = credentialsNonExpired;
+}
+
+public boolean isEnabled() {
+    return enabled;
+}
+
+public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+}
+
+public LocalDate getCredentialsExpiryDate() {
+    return credentialsExpiryDate;
+}
+
+public void setCredentialsExpiryDate(LocalDate credentialsExpiryDate) {
+    this.credentialsExpiryDate = credentialsExpiryDate;
+}
+
+public LocalDate getAccountExpiryDate() {
+    return accountExpiryDate;
+}
+
+public void setAccountExpiryDate(LocalDate accountExpiryDate) {
+    this.accountExpiryDate = accountExpiryDate;
+}
+
+public boolean isTwoFactorEnabled() {
+    return isTwoFactorEnabled;
+}
+
+public void setTwoFactorEnabled(boolean twoFactorEnabled) {
+    isTwoFactorEnabled = twoFactorEnabled;
+}
+
+public String getSignUpMethod() {
+    return signUpMethod;
+}
+
+public void setSignUpMethod(String signUpMethod) {
+    this.signUpMethod = signUpMethod;
+}
+
 }
