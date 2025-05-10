@@ -25,4 +25,10 @@ public interface FollowerRepository extends JpaRepository<Follower, Long> {
   boolean existsByUserIdAndFollowerUserId(Long userId, Long followerUserId);
 
   long countByFollowerUser(User followerUser);
+
+  // Delete all followers where the follower_user_id matches the given user ID
+  void deleteByFollowerUser_UserId(Long followerUserId);
+
+  // Delete all followers where the user_id matches the given user ID
+  void deleteByUser_UserId(Long userId);
 }

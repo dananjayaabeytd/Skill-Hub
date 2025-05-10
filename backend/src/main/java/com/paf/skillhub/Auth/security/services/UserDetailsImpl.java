@@ -44,9 +44,8 @@ public class UserDetailsImpl implements UserDetails {
     this.authorities = authorities;
   }
 
-public static UserDetailsImpl build(User user) {
-    String roleName = user.getRole().getRoleName().name();
-    GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + roleName);
+  public static UserDetailsImpl build(User user) {
+    GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().getRoleName().name());
 
     return new UserDetailsImpl(
         user.getUserId(),
@@ -54,9 +53,9 @@ public static UserDetailsImpl build(User user) {
         user.getEmail(),
         user.getPassword(),
         user.isTwoFactorEnabled(),
-        List.of(authority)
+        List.of(authority) // Wrapping the single authority in a list
     );
-}
+  }
 
 
   @Override
