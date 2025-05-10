@@ -29,4 +29,6 @@ public class UserDTO {
   private Role role;
   private LocalDateTime createdDate;
   private LocalDateTime updatedDate;
+  private boolean isPremium;
+  private LocalDateTime lastPaymentDateTime;
 }

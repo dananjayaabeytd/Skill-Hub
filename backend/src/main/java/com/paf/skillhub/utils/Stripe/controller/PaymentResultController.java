@@ -1,9 +1,12 @@
 package com.paf.skillhub.utils.Stripe.controller;
 
+import com.paf.skillhub.User.repositories.UserRepository;
 import com.paf.skillhub.utils.Stripe.dto.StripeResponse;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
+import java.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,9 @@ public class PaymentResultController {
   @Value("${stripe.secretKey}")
   private String secretKey;
 
+  @Autowired
+  private UserRepository userRepository;
+
   @GetMapping("/success")
   public ModelAndView paymentSuccess(@RequestParam("session_id") String sessionId) {
     Stripe.apiKey = secretKey;
@@ -33,6 +39,20 @@ public class PaymentResultController {
       Session session = Session.retrieve(sessionId);
       System.out.println("Session details --------------------> " + session);
 
+      // Get customer email from the session
+      String customerEmail = session.getCustomerDetails() != null ?
+          session.getCustomerDetails().getEmail() : null;
+
+      // If we have a customer email, update user's premium status
+      if (customerEmail != null && !customerEmail.isEmpty()) {
+        userRepository.findByEmail(customerEmail).ifPresent(user -> {
+          user.setPremium(true);
+          user.setLastPaymentDateTime(LocalDateTime.now());
+          userRepository.save(user);
+          System.out.println("User premium status updated for: " + customerEmail);
+        });
+      }
+
       // Build the redirect URL to your frontend with query parameters
       String redirectUrl = UriComponentsBuilder
           .fromUriString("http://localhost:5173/payment/success") // Your frontend URL
@@ -40,8 +60,7 @@ public class PaymentResultController {
           .queryParam("paymentStatus", session.getPaymentStatus())
           .queryParam("amountTotal", session.getAmountTotal())
           .queryParam("currency", session.getCurrency())
-          .queryParam("customerEmail", session.getCustomerDetails() != null ?
-              session.getCustomerDetails().getEmail() : "")
+          .queryParam("customerEmail", customerEmail)
           .build()
           .toUriString();
 

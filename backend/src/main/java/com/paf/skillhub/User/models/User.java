@@ -59,6 +59,10 @@ public class User {
   private boolean credentialsNonExpired = true;
   private boolean enabled = true;
 
+  // New fields for premium status
+  private boolean isPremium = false;
+  private LocalDateTime lastPaymentDateTime;
+
   private LocalDate credentialsExpiryDate;
   private LocalDate accountExpiryDate;
 

@@ -92,7 +92,9 @@ public class UserServiceImpl implements UserService {
         user.getSignUpMethod(),
         user.getRole(),
         user.getCreatedDate(),
-        user.getUpdatedDate()
+        user.getUpdatedDate(),
+        user.isPremium(),
+        user.getLastPaymentDateTime()
     );
   }
 

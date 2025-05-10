@@ -16,7 +16,7 @@ export function FooterComponent() {
           <div>
             <Footer.Brand
               href='/'
-              src='/logo.png' // Replace with your actual logo path
+              src='src\assets\logo.png'
               alt='Skill Hub Logo'
               name='Skill Hub'
             />

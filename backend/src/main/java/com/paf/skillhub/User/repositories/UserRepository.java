@@ -1,6 +1,7 @@
 package com.paf.skillhub.User.repositories;
 
 import com.paf.skillhub.User.models.User;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,5 +27,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   @Query("SELECT u FROM User u WHERE u.role.roleName = :roleName")
   List<User> findByRoleName(@Param("roleName") String roleName);
+
+  List<User> findByIsPremiumTrue();
+
+  // You can also add a more efficient query that directly finds expired premium users
+  @Query("SELECT u FROM User u WHERE u.isPremium = true AND u.lastPaymentDateTime < :expiryDate")
+  List<User> findExpiredPremiumUsers(@Param("expiryDate") LocalDateTime expiryDate);
 
 }
