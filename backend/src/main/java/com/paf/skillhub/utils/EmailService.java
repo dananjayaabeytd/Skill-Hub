@@ -1,5 +1,6 @@
 package com.paf.skillhub.utils;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,12 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
   private JavaMailSender mailSender;
+
+  // Constructor injection
+  @Autowired
+  public EmailService(JavaMailSender mailSender) {
+    this.mailSender = mailSender;
+  }
 
   public void sendPasswordResetEmail(String to, String resetUrl)
   {

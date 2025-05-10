@@ -1,5 +1,7 @@
 package com.paf.skillhub.User.services.impl;
 
+import com.paf.skillhub.Follow.repositories.FollowerRepository;
+import com.paf.skillhub.Notification.repositories.NotificationRepository;
 import com.paf.skillhub.User.dtos.UserDTO;
 import com.paf.skillhub.Auth.models.AppRole;
 import com.paf.skillhub.Auth.models.PasswordResetToken;
@@ -10,6 +12,7 @@ import com.paf.skillhub.Auth.repositories.RoleRepository;
 import com.paf.skillhub.User.repositories.UserRepository;
 import com.paf.skillhub.User.services.UserService;
 import com.paf.skillhub.utils.EmailService;
+import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -35,6 +38,12 @@ public class UserServiceImpl implements UserService {
 
   @Autowired
   RoleRepository roleRepository;
+
+  @Autowired
+  FollowerRepository followerRepository;
+
+  @Autowired
+  NotificationRepository notificationRepository;
 
   @Autowired
   PasswordResetTokenRepository passwordResetTokenRepository;
@@ -195,5 +204,31 @@ public class UserServiceImpl implements UserService {
       user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
     return userRepository.save(user);
+  }
+
+  @Override
+  @Transactional
+  public void deleteUser(Long userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+
+    // Delete notifications
+    notificationRepository.deleteBySenderUser_UserId(userId);
+
+    // Delete followers
+    followerRepository.deleteByFollowerUser_UserId(userId);
+    followerRepository.deleteByUser_UserId(userId);
+
+    // Remove user skills
+    user.getSkills().clear();
+    userRepository.save(user);
+
+    // Delete the user
+    userRepository.deleteById(userId);
+  }
+
+  @Override
+  public List<User> getUsersByRole(String roleName) {
+    return userRepository.findByRoleName(roleName);
   }
 }

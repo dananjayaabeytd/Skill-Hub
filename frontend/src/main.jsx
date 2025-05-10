@@ -22,6 +22,8 @@ import UserList from './pages/admin/users/UserList.jsx';
 import UserDetails from './pages/admin/users/UserDetails.jsx';
 import SkillList from './pages/admin/skills/SkillList.jsx';
 import MyProfile from './pages/user/MyProfile.jsx';
+import MyWall from './pages/user/MyWall.jsx';
+import Userwall from './pages/user/UserWall.jsx';
 import UserWall from './pages/user/UserWall.jsx';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -64,8 +66,12 @@ const router = createBrowserRouter([
         element: <UserDetails />,
       },
       {
+        path: '/user-wall/:userId',
+        element: <Userwall/>,
+      },
+      {
         path: '/my-wall',
-        element: <UserWall />,
+        element: <MyWall />,
       },
       {
         path: '/admin-dashboard',
@@ -110,14 +116,14 @@ const router = createBrowserRouter([
       { path: '/plans', element: <LearningPlans /> },
       { path: '/plans/create', element: <CreateLearningPlan /> },
       { path: '/plans/edit/:id', element: <EditLearningPlan /> },
-      { path: '/plans/view/:id', element: <ViewDetailedPlan /> }, 
-      
+      { path: '/plans/view/:id', element: <ViewDetailedPlan /> },
+
       { path: '/progress/plan/:planId', element: <PlanProgressPage />},
       { path: '/progress/my', element: <UserProgress />},
       { path: '/progress/edit/:entryId', element: <EditProgressEntry />},
       { path: '/progress/all', element: <AllProgressPosts />},
       { path: '/progress/start/:planId/select-template', element: <TemplateSelectionPage />},
-    
+
     ],
   },
 ]);
