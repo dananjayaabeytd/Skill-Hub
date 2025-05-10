@@ -20,6 +20,7 @@ import {
   HiOutlineCog,
   HiOutlineX,
   HiOutlineExternalLink,
+  HiOutlineChartBar,
   HiOutlineUserAdd,
   HiOutlineUserRemove,
 } from 'react-icons/hi';
@@ -269,6 +270,7 @@ const UserWall = () => {
     }
   }, [userId]);
 
+
   // Get user status badge
   const getUserStatusBadge = () => {
     if (!user) return null;
@@ -279,14 +281,23 @@ const UserWall = () => {
       return <Badge color='gray'>Inactive</Badge>;
     }
   };
+  // With this corrected code:
+useEffect(() => {
+  fetchUserDetails();
+  fetchUserSkills();
+  fetchSocialStats();
+  checkFollowStatus();
+}, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
 
-  // Initialize data on component mount
-  useEffect(() => {
-    fetchUserDetails();
-    fetchUserSkills();
-    fetchSocialStats();
-    checkFollowStatus();
-  }, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
+  // // Initialize data on component mount
+  // useEffect(() => {
+  //   fetchUserDetails();
+  //   fetchUserSkills();
+  //   fetchSocialStats();
+  //   fetchProgress();
+  // }, [fetchUserDetails, fetchUserSkills, fetchSocialStats]);
+  //   checkFollowStatus();
+  // }, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
 
   // Render follow/unfollow button based on conditions
   const renderFollowButton = () => {
@@ -848,6 +859,9 @@ const UserWall = () => {
                   </div>
                 </div>
               </Tabs.Item>
+
+
+
             </Tabs>
           </Card>
         </motion.div>

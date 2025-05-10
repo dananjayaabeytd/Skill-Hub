@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Application Properties ###
+application.properties
+application-*.properties
+
+cred.json
+gcs.json
