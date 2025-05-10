@@ -198,17 +198,19 @@ const PlanProgressPage = () => {
 
   return (
     <div className="relative flex gap-6 bg-[#f9fafb] min-h-screen px-4 py-10">
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed bottom-4 left-4 z-50">
         <Button
           color="failure"
+          size="xs" // makes the button small
           onClick={() => {
             localStorage.removeItem('shownBadges');
             toast.success('Badge popups reset');
           }}
         >
-          🔄 Reset Badge Popups
+          🔄 Reset
         </Button>
       </div>
+
 
       {/* Left Badge Sidebar */}
       <div className="w-64 bg-white border rounded-2xl p-4 shadow-md h-fit sticky top-10 hidden lg:block">
