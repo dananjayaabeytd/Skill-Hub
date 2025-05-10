@@ -30,6 +30,7 @@ import Errors from '../../components/Error';
 import { useMyContext } from '../../store/ContextApi';
 import CreatePost from '../posts/CreatePost';
 import PostList from '../posts/PostList';
+import ProgressCard from "../progress/ProgressCard";
 
 const UserWall = () => {
   const { currentUser } = useMyContext();
@@ -48,6 +49,8 @@ const UserWall = () => {
   // New state for follow functionality
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
+
+  const [entries, setEntries] = useState([])
 
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
@@ -270,6 +273,22 @@ const UserWall = () => {
     }
   }, [userId]);
 
+  // Fetch progress entries for logged-in user
+  const fetchProgress = async () => {
+      try {
+        const res = await api.get('/progress/me');
+        setEntries(res.data || []);
+      } catch (err) {
+        console.error('Failed to fetch user progress');
+      }
+  };
+
+  const grouped = entries.reduce((acc, entry) => {
+      if (!acc[entry.planId]) acc[entry.planId] = [];
+      acc[entry.planId].push(entry);
+      return acc;
+  }, {});
+
 
   // Get user status badge
   const getUserStatusBadge = () => {
@@ -281,23 +300,15 @@ const UserWall = () => {
       return <Badge color='gray'>Inactive</Badge>;
     }
   };
-  // With this corrected code:
+
+// With this corrected code:
 useEffect(() => {
   fetchUserDetails();
   fetchUserSkills();
   fetchSocialStats();
+  fetchProgress();
   checkFollowStatus();
 }, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
-
-  // // Initialize data on component mount
-  // useEffect(() => {
-  //   fetchUserDetails();
-  //   fetchUserSkills();
-  //   fetchSocialStats();
-  //   fetchProgress();
-  // }, [fetchUserDetails, fetchUserSkills, fetchSocialStats]);
-  //   checkFollowStatus();
-  // }, [fetchUserDetails, fetchUserSkills, fetchSocialStats, checkFollowStatus]);
 
   // Render follow/unfollow button based on conditions
   const renderFollowButton = () => {

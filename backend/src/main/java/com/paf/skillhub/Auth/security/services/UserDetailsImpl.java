@@ -44,8 +44,8 @@ public class UserDetailsImpl implements UserDetails {
     this.authorities = authorities;
   }
 
-  public static UserDetailsImpl build(User user) {
-    GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().getRoleName().name());
+public static UserDetailsImpl build(User user) {
+  GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().getRoleName().name());
 
     return new UserDetailsImpl(
         user.getUserId(),

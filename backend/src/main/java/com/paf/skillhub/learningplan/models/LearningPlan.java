@@ -1,11 +1,10 @@
 package com.paf.skillhub.learningplan.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.paf.skillhub.User.models.User;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,7 +36,7 @@ public class LearningPlan {
 
     private Double completionPercentage = 0.0;
 
-    private Long postId; // Optional: nullable FK to related post
+    private Long postId;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -51,5 +50,4 @@ public class LearningPlan {
     @OneToMany(mappedBy = "learningPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<LearningItem> items;
-
 }
