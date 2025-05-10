@@ -11,8 +11,6 @@ import {
   Checkbox,
 } from 'flowbite-react';
 import { HiTrash } from 'react-icons/hi';
-import { MenuBar } from '../../components/shared/Navbar';
-import { FooterComponent } from '../../components/shared/Footer';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 
@@ -25,15 +23,18 @@ const EditLearningPlan = () => {
   const [expectedStartDate, setExpectedStartDate] = useState('');
   const [expectedEndDate, setExpectedEndDate] = useState('');
   const [status, setStatus] = useState('NOT_STARTED');
+  const [skillId, setSkillId] = useState('');
+  const [skills, setSkills] = useState([]);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPlanAndItems = async () => {
+    const fetchData = async () => {
       try {
-        const [planRes, itemsRes] = await Promise.all([
+        const [planRes, itemsRes, skillsRes] = await Promise.all([
           api.get(`/learning-plans/${id}`),
-          api.get(`/learning-plans/${id}/items`)
+          api.get(`/learning-plans/${id}/items`),
+          api.get('/skills'),
         ]);
 
         const plan = planRes.data;
@@ -42,6 +43,8 @@ const EditLearningPlan = () => {
         setExpectedStartDate(plan.expectedStartDate || '');
         setExpectedEndDate(plan.expectedEndDate || '');
         setStatus(plan.status || 'NOT_STARTED');
+        setSkillId(plan.skill?.skillId || '');
+        setSkills(skillsRes.data || []);
 
         const fetchedItems = itemsRes.data || [];
         const cleaned = fetchedItems.map(item => ({
@@ -60,7 +63,7 @@ const EditLearningPlan = () => {
       }
     };
 
-    fetchPlanAndItems();
+    fetchData();
   }, [id]);
 
   const handleItemChange = (index, field, value) => {
@@ -70,15 +73,13 @@ const EditLearningPlan = () => {
   };
 
   const handleAddItem = () => {
-    setItems([
-      ...items,
-      {
-        topic: '',
-        resource: '',
-        deadline: '',
-        completed: false,
-      },
-    ]);
+    setItems([...items, { topic: '', resource: '', deadline: '', completed: false }]);
+  };
+
+  const handleDeleteItem = (index) => {
+    const updated = [...items];
+    updated.splice(index, 1);
+    setItems(updated);
   };
 
   const calculateDuration = () => {
@@ -90,12 +91,7 @@ const EditLearningPlan = () => {
     }
     return 0;
   };
-  const handleDeleteItem = (index) => {
-    const updated = [...items];
-    updated.splice(index, 1);
-    setItems(updated);
-  };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -106,6 +102,7 @@ const EditLearningPlan = () => {
       expectedEndDate,
       expectedDurationDays: calculateDuration(),
       status,
+      skill: skillId ? { skillId: parseInt(skillId, 10) } : null,
       items,
     };
 
@@ -121,54 +118,63 @@ const EditLearningPlan = () => {
 
   if (loading) {
     return (
-      <>
-        <div className="flex justify-center items-center min-h-[60vh]">
-          <Spinner size="xl" />
-        </div>
-      </>
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <Spinner size="xl" />
+      </div>
     );
   }
 
   return (
-    <>
-      <section className="max-w-4xl mx-auto px-4 py-12">
-        <Card>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Edit Learning Plan</h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <Label htmlFor="title" value="Plan Title" />
-              <TextInput id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-            </div>
+    <section className="max-w-4xl mx-auto px-4 py-12">
+      <Card>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Edit Learning Plan</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <Label htmlFor="title" value="Plan Title" />
+            <TextInput id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+          </div>
 
-            <div>
-              <Label htmlFor="description" value="Description" />
-              <Textarea id="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
-            </div>
+          <div>
+            <Label htmlFor="description" value="Description" />
+            <Textarea id="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
+          </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Label value="Expected Start Date" />
-                <TextInput type="date" value={expectedStartDate} onChange={(e) => setExpectedStartDate(e.target.value)} />
-              </div>
-              <div>
-                <Label value="Expected End Date" />
-                <TextInput type="date" value={expectedEndDate} onChange={(e) => setExpectedEndDate(e.target.value)} />
-              </div>
-            </div>
-
+          <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="status" value="Status" />
-              <Select id="status" value={status} onChange={(e) => setStatus(e.target.value)}>
-                <option value="NOT_STARTED">Not Started</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="ON_HOLD">On Hold</option>
-              </Select>
+              <Label value="Expected Start Date" />
+              <TextInput type="date" value={expectedStartDate} onChange={(e) => setExpectedStartDate(e.target.value)} />
             </div>
-
             <div>
-              <Label value="Topics & Tasks" />
-              {items.map((item, index) => (
+              <Label value="Expected End Date" />
+              <TextInput type="date" value={expectedEndDate} onChange={(e) => setExpectedEndDate(e.target.value)} />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="status" value="Status" />
+            <Select id="status" value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="NOT_STARTED">Not Started</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="ON_HOLD">On Hold</option>
+            </Select>
+          </div>
+
+          <div>
+            <Label value="Skill" />
+            <Select value={skillId} onChange={(e) => setSkillId(e.target.value)}>
+              <option value="">Select a skill</option>
+              {skills.map((skill) => (
+                <option key={skill.skillId} value={skill.skillId}>
+                  {skill.skillName}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          <div>
+            <Label value="Topics & Tasks" />
+            {items.map((item, index) => (
               <div key={index} className="grid md:grid-cols-4 gap-4 my-2 items-center">
                 <TextInput
                   placeholder="Topic"
@@ -204,12 +210,12 @@ const EditLearningPlan = () => {
                 </div>
               </div>
             ))}
-              <Button type="button" onClick={handleAddItem} className="mt-2" gradientDuoTone="purpleToBlue">
-                + Add Task
-              </Button>
-            </div>
+            <Button type="button" onClick={handleAddItem} className="mt-2" gradientDuoTone="purpleToBlue">
+              + Add Task
+            </Button>
+          </div>
 
-            <div className="flex justify-center">
+          <div className="flex justify-center">
             <Button
               type="submit"
               gradientDuoTone="purpleToBlue"
@@ -218,10 +224,9 @@ const EditLearningPlan = () => {
               Save Changes
             </Button>
           </div>
-          </form>
-        </Card>
-      </section>
-    </>
+        </form>
+      </Card>
+    </section>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Card,
@@ -7,8 +7,6 @@ import {
   Textarea,
   Select
 } from 'flowbite-react';
-import { MenuBar } from '../../components/shared/Navbar';
-import { FooterComponent } from '../../components/shared/Footer';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
@@ -22,9 +20,23 @@ const CreateLearningPlan = () => {
   const [expectedEndDate, setExpectedEndDate] = useState('');
   const [status, setStatus] = useState('NOT_STARTED');
   const [postId, setPostId] = useState('');
+  const [skillId, setSkillId] = useState('');
+  const [skills, setSkills] = useState([]);
   const [items, setItems] = useState([
     { topic: '', resource: '', deadline: '', completed: false },
   ]);
+
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const res = await api.get('/skills');
+        setSkills(res.data);
+      } catch (error) {
+        console.error('Failed to fetch skills:', error);
+      }
+    };
+    fetchSkills();
+  }, []);
 
   const handleAddItem = () => {
     setItems([...items, { topic: '', resource: '', deadline: '', completed: false }]);
@@ -58,6 +70,7 @@ const CreateLearningPlan = () => {
       expectedDurationDays,
       status,
       postId: postId ? parseInt(postId, 10) : null,
+      skill: skillId ? { skillId: parseInt(skillId, 10) } : null,
       items,
     };
 
@@ -72,106 +85,109 @@ const CreateLearningPlan = () => {
   };
 
   return (
-    <>
-      <section className="max-w-4xl mx-auto px-4 py-12">
-        <Card>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Create Learning Plan</h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
+    <section className="max-w-4xl mx-auto px-4 py-12">
+      <Card>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Create Learning Plan</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <Label htmlFor="title" value="Plan Title" />
+            <TextInput
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="description" value="Description" />
+            <Textarea
+              id="description"
+              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="title" value="Plan Title" />
+              <Label value="Expected Start Date" />
               <TextInput
-                id="title"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
+                type="date"
+                value={expectedStartDate}
+                onChange={(e) => setExpectedStartDate(e.target.value)}
               />
             </div>
-
             <div>
-              <Label htmlFor="description" value="Description" />
-              <Textarea
-                id="description"
-                rows={4}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Label value="Expected Start Date" />
-                <TextInput
-                  type="date"
-                  value={expectedStartDate}
-                  onChange={(e) => setExpectedStartDate(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label value="Expected End Date" />
-                <TextInput
-                  type="date"
-                  value={expectedEndDate}
-                  onChange={(e) => setExpectedEndDate(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label value="Status" />
-              <Select value={status} onChange={(e) => setStatus(e.target.value)}>
-                <option value="NOT_STARTED">Not Started</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="ON_HOLD">On Hold</option>
-              </Select>
-            </div>
-
-            <div>
-              <Label value="Post ID (optional)" />
+              <Label value="Expected End Date" />
               <TextInput
-                type="text"
-                value={postId}
-                placeholder="Related Post ID"
-                onChange={(e) => setPostId(e.target.value)}
+                type="date"
+                value={expectedEndDate}
+                onChange={(e) => setExpectedEndDate(e.target.value)}
               />
             </div>
+          </div>
 
-            <div>
-              <Label value="Topics & Tasks" />
-              {items.map((item, index) => (
-                <div key={index} className="grid md:grid-cols-3 gap-3 my-2">
-                  <TextInput
-                    type="text"
-                    placeholder={`Topic ${index + 1}`}
-                    value={item.topic}
-                    onChange={(e) => handleItemChange(index, 'topic', e.target.value)}
-                    required
-                  />
-                  <TextInput
-                    type="text"
-                    placeholder="Resource (optional)"
-                    value={item.resource}
-                    onChange={(e) => handleItemChange(index, 'resource', e.target.value)}
-                  />
-                  <TextInput
-                    type="date"
-                    value={item.deadline}
-                    onChange={(e) => handleItemChange(index, 'deadline', e.target.value)}
-                  />
-                </div>
+          <div>
+            <Label value="Status" />
+            <Select value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="NOT_STARTED">Not Started</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="ON_HOLD">On Hold</option>
+            </Select>
+          </div>
+
+          <div>
+            <Label value="Skill" />
+            <Select value={skillId} onChange={(e) => setSkillId(e.target.value)}>
+              <option value="">Select a skill</option>
+              {skills.map((skill) => (
+                <option key={skill.skillId} value={skill.skillId}>
+                  {skill.skillName}
+                </option>
               ))}
-              <Button
-                type="button"
-                onClick={handleAddItem}
-                className="mt-2"
-                gradientDuoTone="purpleToBlue"
-              >
-                + Add Task
-              </Button>
-            </div>
+            </Select>
+          </div>
 
-            <div className="flex justify-center">
+          
+
+          <div>
+            <Label value="Topics & Tasks" />
+            {items.map((item, index) => (
+              <div key={index} className="grid md:grid-cols-3 gap-3 my-2">
+                <TextInput
+                  type="text"
+                  placeholder={`Topic ${index + 1}`}
+                  value={item.topic}
+                  onChange={(e) => handleItemChange(index, 'topic', e.target.value)}
+                  required
+                />
+                <TextInput
+                  type="text"
+                  placeholder="Resource (optional)"
+                  value={item.resource}
+                  onChange={(e) => handleItemChange(index, 'resource', e.target.value)}
+                />
+                <TextInput
+                  type="date"
+                  value={item.deadline}
+                  onChange={(e) => handleItemChange(index, 'deadline', e.target.value)}
+                />
+              </div>
+            ))}
+            <Button
+              type="button"
+              onClick={handleAddItem}
+              className="mt-2"
+              gradientDuoTone="purpleToBlue"
+            >
+              + Add Task
+            </Button>
+          </div>
+
+          <div className="flex justify-center">
             <Button
               type="submit"
               gradientDuoTone="purpleToBlue"
@@ -180,10 +196,9 @@ const CreateLearningPlan = () => {
               Submit Plan
             </Button>
           </div>
-          </form>
-        </Card>
-      </section>
-    </>
+        </form>
+      </Card>
+    </section>
   );
 };
 
