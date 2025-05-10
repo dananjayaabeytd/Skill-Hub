@@ -58,9 +58,9 @@ export const NotificationProvider = ({ children }) => {
       
       // If there are new notifications, show a toast
       if (newNotifications.length > 0 && notifications.length > 0) {
-        toast(`You have ${newNotifications.length} new notification${newNotifications.length > 1 ? 's' : ''}`, {
-          icon: '🔔',
-        });
+        // toast(`You have ${newNotifications.length} new notification${newNotifications.length > 1 ? 's' : ''}`, {
+        //   icon: '🔔',
+        // });
       }
       
       // Update notifications state with new data (if available)
