@@ -217,55 +217,57 @@ const PostList = ({
   }, [userId, publicOnly]); // Add publicOnly to dependencies
 
   // Fetch post like information
-  const fetchPostLikes = async postId => {
-    try {
-      // Get like count
-      const count = await likeService.getLikesCount(postId);
-      setLikeCounts(prev => ({
-        ...prev,
-        [postId]: count,
-      }));
+  // ...existing code...
+const fetchPostLikes = async postId => {
+  try {
+    // Get like count
+    const count = await likeService.getLikesCount(postId);
+    setLikeCounts(prev => ({
+      ...prev,
+      [postId]: count,
+    }));
 
-      // Check if current user liked this post
-      if (userId) {
-        const hasLiked = await likeService.getUserLike(postId, userId);
-        setLikedPosts(prev => ({
-          ...prev,
-          [postId]: hasLiked,
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching like information:', error);
+    // Check if current user liked this post
+    if (currentUserId) {
+      const hasLiked = await likeService.getUserLike(postId, currentUserId);
+      setLikedPosts(prev => ({
+        ...prev,
+        [postId]: hasLiked,
+      }));
     }
-  };
+  } catch (error) {
+    console.error('Error fetching like information:', error);
+  }
+};
+// ...existing code...
 
   // Handle like/unlike
   const handleLikeToggle = async postId => {
-    if (processingLike === postId) return; // Prevent double clicks
+  if (processingLike === postId) return; // prevent double clicks
 
-    setProcessingLike(postId);
-    try {
-      const isLiked = likedPosts[postId];
+  setProcessingLike(postId);
+  try {
+    const isLiked = likedPosts[postId];
 
-      if (isLiked) {
-        await likeService.unlikePost(postId, userId);
-        setLikedPosts(prev => ({ ...prev, [postId]: false }));
-        setLikeCounts(prev => ({
-          ...prev,
-          [postId]: Math.max(0, prev[postId] - 1),
-        }));
-      } else {
-        await likeService.likePost(postId, userId);
-        setLikedPosts(prev => ({ ...prev, [postId]: true }));
-        setLikeCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + 1 }));
-      }
-    } catch (error) {
-      console.error('Error toggling like:', error);
-      toast.error('Failed to process your like');
-    } finally {
-      setProcessingLike(null);
+    if (isLiked) {
+      await likeService.unlikePost(postId, currentUserId);
+      setLikedPosts(prev => ({ ...prev, [postId]: false }));
+      setLikeCounts(prev => ({
+        ...prev,
+        [postId]: Math.max(0, prev[postId] - 1),
+      }));
+    } else {
+      await likeService.likePost(postId, currentUserId);
+      setLikedPosts(prev => ({ ...prev, [postId]: true }));
+      setLikeCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + 1 }));
     }
-  };
+  } catch (error) {
+    console.error('Error toggling like:', error);
+    toast.error('Failed to process your like');
+  } finally {
+    setProcessingLike(null);
+  }
+};
 
   // Open comment modal
   const handleCommentClick = postId => {

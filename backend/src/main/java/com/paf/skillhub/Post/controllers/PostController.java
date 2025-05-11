@@ -44,7 +44,7 @@ public class PostController {
       files.addAll(Arrays.asList(videos));
     }
 
-    if (files.size() > 3) {
+    if (files.size() > 6) {
       return ResponseEntity.badRequest().body(null);
     }
 
