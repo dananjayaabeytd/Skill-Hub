@@ -1,6 +1,7 @@
 package com.paf.skillhub.Post.controllers;
 
 import com.paf.skillhub.Post.dto.CommentDTO;
+import com.paf.skillhub.Post.dto.CommentTextDTO;
 import com.paf.skillhub.Post.models.Comment;
 import com.paf.skillhub.Post.services.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +32,14 @@ public class CommentController {
 
   // Edit a comment
   @PutMapping("/{commentId}")
-  public ResponseEntity<CommentDTO> updateComment(@PathVariable Long commentId, @RequestParam Long userId, @RequestBody String newCommentText) {
-    String commentText = newCommentText.substring(1, newCommentText.length() - 1);
-    return ResponseEntity.ok(commentService.updateComment(commentId, userId, commentText));
+  public ResponseEntity<CommentDTO> updateComment(
+      @PathVariable Long commentId,
+      @RequestParam Long userId,
+      @RequestBody CommentTextDTO request
+  ) {
+    return ResponseEntity.ok(commentService.updateComment(commentId, userId, request.getCommentText()));
   }
+
 
   // Delete a comment
   @DeleteMapping("/user/{userId}/comment/{commentId}")

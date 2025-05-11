@@ -162,9 +162,6 @@ export function MenuBar() {
             </span>
           </Navbar.Link>
         )}
-        <Navbar.Link as={Link} to='/pricing' active={pathName === '/pricing'}>
-          Premium
-        </Navbar.Link>
         {/* Plans Dropdown with hover effects */}
         <Dropdown
           inline
