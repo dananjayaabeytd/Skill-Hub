@@ -136,21 +136,6 @@ public class PostService {
     return savedPost;
   }
 
-  public Post createPost(Post post, List<PostMedia> media) {
-    Post savedPost = postRepository.save(post);
-
-    if (media.size() <= 3) { // Ensure max 3 media
-      for (PostMedia m : media) {
-        m.setPost(savedPost);
-        postMediaRepository.save(m);
-      }
-    } else {
-      throw new IllegalArgumentException("Cannot upload more than 3 media items.");
-    }
-
-    return savedPost;
-  }
-
   public List<PostResponseDTO> getPostsByUser(Long userId) {
     List<Post> posts = postRepository.findByUserUserId(userId);
     return posts.stream()

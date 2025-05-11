@@ -9,6 +9,7 @@ import {
   Select,
   FileInput,
   ToggleSwitch,
+  Badge,
 } from 'flowbite-react';
 import toast from 'react-hot-toast';
 import {
@@ -18,6 +19,8 @@ import {
   HiOutlineUpload,
   HiOutlineLockClosed,
   HiOutlineGlobe,
+  HiOutlineStar,
+  HiOutlineInformationCircle,
 } from 'react-icons/hi';
 import api from '../../services/api';
 import { useMyContext } from '../../store/ContextApi';
@@ -31,9 +34,37 @@ const CreatePost = ({ isOpen, onClose, userId, onPostCreated }) => {
   const [skills, setSkills] = useState([]);
   const [loadingSkills, setLoadingSkills] = useState(false);
   const [isPublic, setIsPublic] = useState(true); // Default to public posts
+  const [showPremiumMessage, setShowPremiumMessage] = useState(false);
 
   const { currentUser } = useMyContext();
   const currentUserId = currentUser?.id;
+  
+  // Check if user is premium
+  const isPremiumUser = currentUser?.premium === true;
+  
+  // Set file limits based on premium status
+  const FILE_LIMIT = isPremiumUser ? 6 : 3;
+
+  const handlePremiumCheckout = async e => {
+    e.preventDefault();
+    try {
+      const response = await api.post('/payment/checkout', {
+        amount: 100,
+        quantity: 1,
+        currency: 'USD',
+        name: 'Premium',
+      });
+
+      if (response.data.status === 'SUCCESS' && response.data.sessionUrl) {
+        // Open payment URL in a new tab
+        window.open(response.data.sessionUrl, '_blank');
+      } else {
+        console.error('Payment session creation failed');
+      }
+    } catch (err) {
+      console.error('Error initiating payment:', err);
+    }
+  };
 
   // Fetch user's skills for the dropdown
   useEffect(() => {
@@ -57,19 +88,35 @@ const CreatePost = ({ isOpen, onClose, userId, onPostCreated }) => {
 
   const handleImageChange = e => {
     const files = Array.from(e.target.files);
-    if (files.length + images.length > 3) {
-      toast.error('You can only upload up to 3 images and videos combined');
+    const totalCount = files.length + images.length + videos.length;
+    
+    if (totalCount > FILE_LIMIT) {
+      if (!isPremiumUser) {
+        setShowPremiumMessage(true);
+        toast.error(`Free users can only upload up to ${FILE_LIMIT} media files`);
+      } else {
+        toast.error(`Premium users can upload up to ${FILE_LIMIT} media files`);
+      }
       return;
     }
+    
     setImages([...images, ...files]);
   };
 
   const handleVideoChange = e => {
     const files = Array.from(e.target.files);
-    if (files.length + videos.length > 3) {
-      toast.error('You can only upload up to 3 images and videos combined');
+    const totalCount = files.length + images.length + videos.length;
+    
+    if (totalCount > FILE_LIMIT) {
+      if (!isPremiumUser) {
+        setShowPremiumMessage(true);
+        toast.error(`Free users can only upload up to ${FILE_LIMIT} media files`);
+      } else {
+        toast.error(`Premium users can upload up to ${FILE_LIMIT} media files`);
+      }
       return;
     }
+    
     setVideos([...videos, ...files]);
   };
 
@@ -78,6 +125,11 @@ const CreatePost = ({ isOpen, onClose, userId, onPostCreated }) => {
       setImages(images.filter((_, i) => i !== index));
     } else {
       setVideos(videos.filter((_, i) => i !== index));
+    }
+    
+    // Hide premium message if showing
+    if (showPremiumMessage) {
+      setShowPremiumMessage(false);
     }
   };
 
@@ -96,8 +148,8 @@ const CreatePost = ({ isOpen, onClose, userId, onPostCreated }) => {
       return;
     }
 
-    if (totalFiles > 3) {
-      toast.error('You can only upload up to 3 media files');
+    if (totalFiles > FILE_LIMIT) {
+      toast.error(`You can only upload up to ${FILE_LIMIT} media files`);
       return;
     }
 
@@ -139,6 +191,7 @@ const CreatePost = ({ isOpen, onClose, userId, onPostCreated }) => {
       setImages([]);
       setVideos([]);
       setIsPublic(true); // Reset to default
+      setShowPremiumMessage(false);
 
       // Close modal and notify parent
       onClose();
@@ -272,13 +325,52 @@ const CreatePost = ({ isOpen, onClose, userId, onPostCreated }) => {
 
             {/* Media Upload */}
             <div className='space-y-4'>
-              <Label
-                value='Add Media (optional)'
-                className='text-gray-700 font-medium block'
-              />
-              <p className='text-xs text-gray-500'>
-                You can upload up to 3 files (images or videos combined)
-              </p>
+              <div className="flex items-center justify-between">
+                <Label
+                  value='Add Media (optional)'
+                  className='text-gray-700 font-medium block'
+                />
+                {isPremiumUser ? (
+                  <Badge color="warning" className="flex items-center gap-1">
+                    <HiOutlineStar className="h-3 w-3" />
+                    Up to {FILE_LIMIT} files
+                  </Badge>
+                ) : (
+                  <Badge color="gray" className="flex items-center gap-1">
+                    <HiOutlineInformationCircle className="h-3 w-3" />
+                    Up to {FILE_LIMIT} files
+                  </Badge>
+                )}
+              </div>
+              
+              {/* Premium upgrade message */}
+              {showPremiumMessage && !isPremiumUser && (
+                <motion.div 
+                  className="bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200 rounded-lg p-3 flex items-start gap-3"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <div className="text-amber-500 mt-0.5">
+                    <HiOutlineStar className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-amber-700 text-sm">Upgrade to Premium</h4>
+                    <p className="text-xs text-amber-600 mt-1">
+                      Premium members can upload up to {FILE_LIMIT + 7} media files per post.
+                      Showcase more of your work!
+                    </p>
+                    <Button 
+                      size="xs" 
+                      color="warning" 
+                      className="mt-2"
+                      onClick={handlePremiumCheckout}
+                    >
+                      <HiOutlineStar className="mr-1 h-3 w-3" />
+                      Upgrade Now
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
 
               <div className='flex flex-wrap gap-4'>
                 {/* Image upload */}
@@ -290,7 +382,7 @@ const CreatePost = ({ isOpen, onClose, userId, onPostCreated }) => {
                     id='image-upload'
                     accept='image/*'
                     onChange={handleImageChange}
-                    disabled={totalFiles >= 3}
+                    disabled={totalFiles >= FILE_LIMIT}
                     className='hidden'
                     multiple
                   />
@@ -301,7 +393,7 @@ const CreatePost = ({ isOpen, onClose, userId, onPostCreated }) => {
                     onClick={() =>
                       document.getElementById('image-upload').click()
                     }
-                    disabled={totalFiles >= 3}
+                    disabled={totalFiles >= FILE_LIMIT}
                   >
                     <HiOutlinePhotograph className='mr-2 h-5 w-5' />
                     Add Images
@@ -317,7 +409,7 @@ const CreatePost = ({ isOpen, onClose, userId, onPostCreated }) => {
                     id='video-upload'
                     accept='video/*'
                     onChange={handleVideoChange}
-                    disabled={totalFiles >= 3}
+                    disabled={totalFiles >= FILE_LIMIT}
                     className='hidden'
                     multiple
                   />
@@ -328,7 +420,7 @@ const CreatePost = ({ isOpen, onClose, userId, onPostCreated }) => {
                     onClick={() =>
                       document.getElementById('video-upload').click()
                     }
-                    disabled={totalFiles >= 3}
+                    disabled={totalFiles >= FILE_LIMIT}
                   >
                     <HiOutlineUpload className='mr-2 h-5 w-5' />
                     Add Videos
@@ -336,11 +428,27 @@ const CreatePost = ({ isOpen, onClose, userId, onPostCreated }) => {
                 </div>
               </div>
 
+              {/* File counter */}
+              <div className="flex justify-between items-center">
+                <p className='text-xs text-gray-500'>
+                  {totalFiles > 0 ? 
+                    `${totalFiles} of ${FILE_LIMIT} files selected` : 
+                    `You can upload up to ${FILE_LIMIT} files (images or videos combined)`
+                  }
+                </p>
+                {isPremiumUser && (
+                  <span className="text-xs text-amber-500 flex items-center">
+                    <HiOutlineStar className="h-3 w-3 mr-1" />
+                    Premium benefit
+                  </span>
+                )}
+              </div>
+
               {/* File previews */}
               {(images.length > 0 || videos.length > 0) && (
                 <div className='mt-4'>
                   <p className='text-sm font-medium text-gray-700 mb-2'>
-                    Selected Files ({totalFiles}/3):
+                    Selected Files ({totalFiles}/{FILE_LIMIT}):
                   </p>
                   <div className='flex flex-wrap gap-2'>
                     {images.map((file, index) => (
